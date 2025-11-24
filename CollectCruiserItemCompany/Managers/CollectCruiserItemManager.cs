@@ -113,26 +113,30 @@ internal class CollectCruiserItemManager
                 )
             ];
 
-            // worldNewItemAirPositions
+            // inplace: worldNewItemAirPositions
             elevatorTransform.TransformPoints(positions);
 
-            // worldNewItemPositions
+            // inplace: worldNewItemPositions
             positions = [.. chunkItems.Select((item, index) => item.GetItemFloorPosition(positions[index]))];
 
-            // localNewItemPositions
+            // clone
+            var worldNewItemPositions = positions.ToArray();
+
+            // inplace: localNewItemPositions
             elevatorTransform.InverseTransformPoints(positions);
 
             foreach (var (item, index) in chunkItems.Select((item, index) => (item, index)))
             {
                 var worldOldItemPosition = item.transform.position;
                 var localNewItemPosition = positions[index];
-                var worldNewItemPosition = elevatorTransform.TransformPoint(localNewItemPosition);
+                var worldNewItemPosition = worldNewItemPositions[index];
 
                 Logger.LogInfo(
                     "Collecting item." +
                     $" name={item.name}" +
                     $" worldOldItemPosition=({worldOldItemPosition.x:F2}, {worldOldItemPosition.y:F2}, {worldOldItemPosition.z:F2})" +
-                    $" localNewItemPosition=({localNewItemPosition.x:F2}, {localNewItemPosition.y:F2}, {localNewItemPosition.z:F2})"
+                    $" localNewItemPosition=({localNewItemPosition.x:F2}, {localNewItemPosition.y:F2}, {localNewItemPosition.z:F2})" +
+                    $" worldNewItemPosition=({worldNewItemPosition.x:F2}, {worldNewItemPosition.y:F2}, {worldNewItemPosition.z:F2})"
                 );
 
                 item.transform.SetParent(elevatorTransform);
