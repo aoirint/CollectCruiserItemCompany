@@ -1,59 +1,50 @@
 #nullable enable
 
 using System.Linq;
-using System.Text;
-using CollectCruiserItemCompany.Utils;
 
 namespace CollectCruiserItemCompany.Commands;
 
 internal abstract class ConfirmableCommand : Command
 {
-    internal TerminalNode? waitingTerminalNode = null;
+    private TerminalNode? previousNode = null;
 
-    internal abstract TerminalNode ExecuteConfirm();
+    internal abstract ExecuteResult ExecuteConfirm();
 
-    internal abstract TerminalNode ExecuteDeny();
+    internal abstract ExecuteResult ExecuteDeny();
 
-    internal virtual TerminalNode ExecuteInvalid()
+    internal virtual ExecuteResult? ExecuteInvalid()
     {
-        var builder = new StringBuilder();
-        builder.AppendLine("Invalid input. Please input 'confirm' or 'deny'.");
-
-        return TerminalUtils.CreateTerminalNode(
-            displayText: builder.ToString(),
-            clearPreviousText: false
-        );
-    }
-
-    internal override TerminalNode? ExecutePrefix(string[] args)
-    {
-        if (waitingTerminalNode == null)
+        if (previousNode == null)
         {
+            Logger.LogError("previousNode is null.");
             return null;
         }
 
-        var confirmResult = IsConfirmed(args);
-        if (confirmResult == null)
-        {
-            return ExecuteInvalid();
-        }
+        return new ExecuteResult(
+            terminalNode: previousNode,
+            nextWaitingCommand: this
+        );
+    }
 
-        if (confirmResult == true)
+    internal ExecuteResult? ExecuteConfirmation(string[] args)
+    {
+        var isConfirmed = IsConfirmed(args);
+
+        if (isConfirmed == true)
         {
             return ExecuteConfirm();
         }
+        else if (isConfirmed == false)
+        {
+            return ExecuteDeny();
+        }
 
-        return ExecuteDeny();
+        return ExecuteInvalid();
     }
 
-    internal override void ExecutePrefixPostfix(TerminalNode terminalNode)
+    internal override void ExecuteCorePostfix(ExecuteResult result)
     {
-        waitingTerminalNode = null;
-    }
-
-    internal override void ExecuteCorePostfix(TerminalNode terminalNode)
-    {
-        waitingTerminalNode = terminalNode;
+        previousNode = result.TerminalNode;
     }
 
     internal bool? IsConfirmed(string[] args)

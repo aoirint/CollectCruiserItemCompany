@@ -4,39 +4,41 @@ using BepInEx.Logging;
 
 namespace CollectCruiserItemCompany.Commands;
 
+internal sealed class ExecuteResult
+{
+    internal TerminalNode TerminalNode { get; }
+    internal ConfirmableCommand? NextWaitingCommand { get; }
+
+    internal ExecuteResult(TerminalNode terminalNode, ConfirmableCommand? nextWaitingCommand)
+    {
+        TerminalNode = terminalNode;
+        NextWaitingCommand = nextWaitingCommand;
+    }
+}
+
 internal abstract class Command
 {
     internal static ManualLogSource Logger => CollectCruiserItemCompany.Logger!;
 
     internal abstract bool IsMatch(string[] args);
 
-    internal virtual TerminalNode? ExecutePrefix(string[] args)
+    internal ExecuteResult? Execute(string[] args)
     {
-        return null;
-    }
-
-    internal TerminalNode Execute(string[] args)
-    {
-        var terminalNode = ExecutePrefix(args);
-        if (terminalNode != null)
+        var result = ExecuteCore(args);
+        if (result == null)
         {
-            return terminalNode;
+            Logger.LogError("ExecuteCore returned null.");
+            return null;
         }
 
-        terminalNode = ExecuteCore(args);
+        ExecuteCorePostfix(result);
 
-        ExecuteCorePostfix(terminalNode);
-
-        return terminalNode;
+        return result;
     }
 
-    internal virtual void ExecutePrefixPostfix(TerminalNode terminalNode)
+    internal abstract ExecuteResult? ExecuteCore(string[] args);
+
+    internal virtual void ExecuteCorePostfix(ExecuteResult result)
     {
     }
-
-    internal virtual void ExecuteCorePostfix(TerminalNode terminalNode)
-    {
-    }
-
-    internal abstract TerminalNode ExecuteCore(string[] args);
 }

@@ -31,40 +31,50 @@ internal class CollectScrapCommand : ConfirmableCommand
         return true;
     }
 
-    internal override TerminalNode ExecuteCore(string[] args)
+    internal override ExecuteResult? ExecuteCore(string[] args)
     {
         var builder = new StringBuilder();
 
-        builder.AppendLine("Are you sure you want to collect all scraps from the cruiser?");
-        builder.AppendLine("Type 'confirm' to proceed or 'deny' to cancel.");
+        builder.AppendLine("You have requested to collect all scraps from the cruiser.");
+        builder.AppendLine();
+        builder.AppendLine("Please CONFIRM or DENY.");
 
-        return TerminalUtils.CreateTerminalNode(
-            displayText: builder.ToString(),
-            clearPreviousText: true
+        return new ExecuteResult(
+            terminalNode: TerminalUtils.CreateTerminalNode(
+                displayText: builder.ToString(),
+                clearPreviousText: true
+            ),
+            nextWaitingCommand: this
         );
     }
 
-    internal override TerminalNode ExecuteConfirm()
+    internal override ExecuteResult ExecuteConfirm()
     {
         var builder = new StringBuilder();
 
         builder.AppendLine("All scraps have been collected from the cruiser.");
 
-        return TerminalUtils.CreateTerminalNode(
-            displayText: builder.ToString(),
-            clearPreviousText: false
+        return new ExecuteResult(
+            terminalNode: TerminalUtils.CreateTerminalNode(
+                displayText: builder.ToString(),
+                clearPreviousText: false
+            ),
+            nextWaitingCommand: null
         );
     }
 
-    internal override TerminalNode ExecuteDeny()
+    internal override ExecuteResult ExecuteDeny()
     {
         var builder = new StringBuilder();
 
         builder.AppendLine("Cancelled collection.");
 
-        return TerminalUtils.CreateTerminalNode(
-            displayText: builder.ToString(),
-            clearPreviousText: false
+        return new ExecuteResult(
+            terminalNode: TerminalUtils.CreateTerminalNode(
+                displayText: builder.ToString(),
+                clearPreviousText: false
+            ),
+            nextWaitingCommand: null
         );
     }
 }

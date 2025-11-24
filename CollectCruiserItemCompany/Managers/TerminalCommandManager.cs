@@ -1,7 +1,9 @@
 #nullable enable
 
+using System.Text;
 using BepInEx.Logging;
 using CollectCruiserItemCompany.Commands;
+using CollectCruiserItemCompany.Utils;
 
 namespace CollectCruiserItemCompany.Managers;
 
@@ -20,29 +22,48 @@ internal class TerminalCommandManager
     {
         if (waitingCommand != null)
         {
-            var terminalNode = waitingCommand.Execute(args);
+            var result = waitingCommand.ExecuteConfirmation(args);
+            if (result == null)
+            {
+                Logger.LogError("ExecuteConfirmation returned null.");
+                return CreateInvalidStateNode();
+            }
 
-            ClearWaitingCommand();
+            waitingCommand = result.NextWaitingCommand;
 
-            return terminalNode;
+            return result.TerminalNode;
         }
 
         foreach (var command in COMMANDS)
         {
             if (command.IsMatch(args))
             {
-                var terminalNode = command.Execute(args);
-
-                if (command is ConfirmableCommand confirmableCommand)
+                var result = command.Execute(args);
+                if (result == null)
                 {
-                    waitingCommand = confirmableCommand;
+                    Logger.LogError("Execute returned null.");
+                    return CreateInvalidStateNode();
                 }
 
-                return terminalNode;
+                waitingCommand = result.NextWaitingCommand;
+
+                return result.TerminalNode;
             }
         }
 
         return null;
+    }
+
+    internal TerminalNode CreateInvalidStateNode()
+    {
+        var builder = new StringBuilder();
+
+        builder.AppendLine("Invalid state.");
+
+        return TerminalUtils.CreateTerminalNode(
+            displayText: builder.ToString(),
+            clearPreviousText: false
+        );
     }
 
     internal void ClearWaitingCommand()

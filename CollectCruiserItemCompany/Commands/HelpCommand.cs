@@ -26,7 +26,7 @@ internal class HelpCommand : Command
         return true;
     }
 
-    internal override TerminalNode ExecuteCore(string[] args)
+    internal override ExecuteResult? ExecuteCore(string[] args)
     {
         var builder = new StringBuilder();
 
@@ -49,9 +49,12 @@ internal class HelpCommand : Command
         builder.AppendLine("View the list of items that would be collected.");
         builder.AppendLine();
 
-        return TerminalUtils.CreateTerminalNode(
-            displayText: builder.ToString(),
-            clearPreviousText: true
+        return new ExecuteResult(
+            terminalNode: TerminalUtils.CreateTerminalNode(
+                displayText: builder.ToString(),
+                clearPreviousText: true
+            ),
+            nextWaitingCommand: null
         );
     }
 }
