@@ -209,7 +209,11 @@ internal class CollectCruiserItemManager
             var offset = new Vector3(offsetX, offsetY, offsetZ);
 
             var worldOldItemPosition = item.transform.position;
-            var localNewItemPosition = localBaseSpawnPosition + offset;
+            var localNewItemAirPosition = localBaseSpawnPosition + offset;
+
+            var worldNewItemAirPosition = elevatorTransform.TransformPoint(localNewItemAirPosition);
+            var worldNewItemPosition = item.GetItemFloorPosition(worldNewItemAirPosition);
+            var localNewItemPosition = elevatorTransform.InverseTransformPoint(worldNewItemPosition);
 
             Logger.LogInfo(
                 "Collecting item." +
@@ -219,7 +223,7 @@ internal class CollectCruiserItemManager
             );
 
             item.transform.SetParent(elevatorTransform);
-            item.transform.localPosition = localNewItemPosition;
+            item.transform.position = worldNewItemPosition;
             item.transform.rotation = Quaternion.identity;
 
             // Set parameters to start the item falls
