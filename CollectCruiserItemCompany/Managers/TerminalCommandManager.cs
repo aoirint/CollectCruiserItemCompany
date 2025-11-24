@@ -26,6 +26,10 @@ internal class TerminalCommandManager
             if (result == null)
             {
                 Logger.LogError("ExecuteConfirmation returned null.");
+
+                // Reset internal state
+                waitingCommand = null;
+
                 return CreateInvalidStateNode();
             }
 

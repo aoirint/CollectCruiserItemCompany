@@ -28,6 +28,24 @@ internal abstract class ConfirmableCommand : Command
 
     internal ExecuteResult? ExecuteConfirmation(string[] args)
     {
+        var result = ExecuteConfirmationCore(args);
+        if (result == null)
+        {
+            Logger.LogError("ExecuteConfirmationCore returned null.");
+
+            // Reset internal state
+            previousNode = null;
+
+            return null;
+        }
+
+        previousNode = result.TerminalNode;
+
+        return result;
+    }
+
+    internal ExecuteResult? ExecuteConfirmationCore(string[] args)
+    {
         var isConfirmed = IsConfirmed(args);
 
         if (isConfirmed == true)
