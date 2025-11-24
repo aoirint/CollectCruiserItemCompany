@@ -31,27 +31,19 @@ internal class HelpCommand : Command
         builder.AppendLine();
 
         builder.AppendLine(">COLLECT SCRAP");
-        builder.AppendLine("Collect all scraps on the cruiser into your ship.");
-        builder.AppendLine();
-
-        builder.AppendLine(">VIEW COLLECT SCRAP");
-        builder.AppendLine("View all scraps on the cruiser that can be collected into your ship.");
+        builder.AppendLine("Collect all scraps from the cruiser into your ship.");
         builder.AppendLine();
 
         builder.AppendLine(">COLLECT TOOL");
-        builder.AppendLine("Collect all tools on the cruiser into your ship.");
-        builder.AppendLine();
-
-        builder.AppendLine(">VIEW COLLECT TOOL");
-        builder.AppendLine("View all tools on the cruiser that can be collected into your ship.");
+        builder.AppendLine("Collect all tools from the cruiser into your ship.");
         builder.AppendLine();
 
         builder.AppendLine(">COLLECT ALL");
-        builder.AppendLine("Collect all items on the cruiser into your ship.");
+        builder.AppendLine("Collect all items from the cruiser into your ship.");
         builder.AppendLine();
 
-        builder.AppendLine(">VIEW COLLECT ALL");
-        builder.AppendLine("View all items on the cruiser that can be collected into your ship.");
+        builder.AppendLine(">VIEW COLLECT [COMMAND]");
+        builder.AppendLine("View the list of items that would be collected by the specified command.");
         builder.AppendLine();
 
         return TerminalUtils.CreateTerminalNode(
