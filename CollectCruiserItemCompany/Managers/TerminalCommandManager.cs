@@ -10,6 +10,7 @@ internal class TerminalCommandManager
     internal static ManualLogSource Logger => CollectCruiserItemCompany.Logger!;
 
     internal static Command[] COMMANDS { get; } = [
+        new CollectScrapCommand(),
         new HelpCommand()
     ];
 
