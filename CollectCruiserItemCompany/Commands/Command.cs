@@ -41,4 +41,8 @@ internal abstract class Command
     internal virtual void ExecuteCorePostfix(ExecuteResult result)
     {
     }
+
+    internal virtual void Reset()
+    {
+    }
 }

@@ -32,10 +32,6 @@ internal abstract class ConfirmableCommand : Command
         if (result == null)
         {
             Logger.LogError("ExecuteConfirmationCore returned null.");
-
-            // Reset internal state
-            previousNode = null;
-
             return null;
         }
 
@@ -63,6 +59,11 @@ internal abstract class ConfirmableCommand : Command
     internal override void ExecuteCorePostfix(ExecuteResult result)
     {
         previousNode = result.TerminalNode;
+    }
+
+    internal override void Reset()
+    {
+        previousNode = null;
     }
 
     internal bool? IsConfirmed(string[] args)

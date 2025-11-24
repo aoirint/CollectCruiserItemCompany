@@ -28,7 +28,7 @@ internal class TerminalCommandManager
                 Logger.LogError("ExecuteConfirmation returned null.");
 
                 // Reset internal state
-                waitingCommand = null;
+                Reset();
 
                 return CreateInvalidStateNode();
             }
@@ -46,6 +46,10 @@ internal class TerminalCommandManager
                 if (result == null)
                 {
                     Logger.LogError("Execute returned null.");
+
+                    // Reset internal state
+                    Reset();
+
                     return CreateInvalidStateNode();
                 }
 
@@ -58,6 +62,16 @@ internal class TerminalCommandManager
         return null;
     }
 
+    internal void Reset()
+    {
+        foreach (var command in COMMANDS)
+        {
+            command.Reset();
+        }
+
+        waitingCommand = null;
+    }
+
     internal TerminalNode CreateInvalidStateNode()
     {
         var builder = new StringBuilder();
@@ -68,10 +82,5 @@ internal class TerminalCommandManager
             displayText: builder.ToString(),
             clearPreviousText: false
         );
-    }
-
-    internal void ClearWaitingCommand()
-    {
-        waitingCommand = null;
     }
 }
