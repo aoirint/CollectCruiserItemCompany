@@ -143,20 +143,21 @@ internal class CollectCruiserItemManager
                 item.transform.position = worldNewItemPosition;
                 item.transform.rotation = Quaternion.identity;
 
-                // Prevent the item teleports to the old position due to fake falling
+                // Prevent the item teleports to the old position due to fake falling.
                 // NOTE: These positions are local positions.
                 item.fallTime = 0f;
                 item.startFallingPosition = localNewItemPosition;
                 item.targetFloorPosition = localNewItemPosition;
 
-                // Item collection into the ship
+                // Set the item to follow the ship and keep after the current day.
+                // Play the item collection animation if not already played.
                 localPlayer.SetItemInElevator(
                     true, // droppedInShipRoom
                     true, // droppedInElevator
                     item // gObject
                 );
 
-                // Disable drop sound effect
+                // Disable drop sound effect.
                 item.hasHitGround = true;
 
                 yield return item;
