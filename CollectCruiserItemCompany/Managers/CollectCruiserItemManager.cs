@@ -143,7 +143,7 @@ internal class CollectCruiserItemManager
                 item.transform.position = worldNewItemPosition;
                 item.transform.rotation = Quaternion.identity;
 
-                // Set parameters to start the item falls
+                // Prevent the item teleports to the old position due to fake falling
                 // NOTE: These positions are local positions.
                 item.fallTime = 0f;
                 item.startFallingPosition = localNewItemPosition;
