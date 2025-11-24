@@ -50,6 +50,44 @@ internal static class ShipUtils
         return shipTransform;
     }
 
+    public static Transform? GetElevatorTransform()
+    {
+        var startOfRound = StartOfRound.Instance;
+        if (startOfRound == null)
+        {
+            Logger.LogError("StartOfRound.Instance is null.");
+            return null;
+        }
+
+        var elevatorTransform = startOfRound.elevatorTransform;
+        if (elevatorTransform == null)
+        {
+            Logger.LogError("StartOfRound.elevatorTransform is null.");
+            return null;
+        }
+
+        return elevatorTransform;
+    }
+
+    public static Bounds? GetShipBounds()
+    {
+        var startOfRound = StartOfRound.Instance;
+        if (startOfRound == null)
+        {
+            Logger.LogError("StartOfRound.Instance is null.");
+            return null;
+        }
+
+        var shipColider = startOfRound.shipBounds;
+        if (shipColider == null)
+        {
+            Logger.LogError("StartOfRound.shipBounds is null.");
+            return null;
+        }
+
+        return shipColider.bounds;
+    }
+
     public static Transform[]? GetVehicleTransforms()
     {
         var vehicleControllers = Object.FindObjectsOfType<VehicleController>();

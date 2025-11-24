@@ -28,12 +28,17 @@ internal class CollectCruiserItemManager
             throw new System.Exception("StartOfRound.Instance is null.");
         }
 
+        var elevatorTransform = startOfRound.elevatorTransform;
+        if (elevatorTransform == null)
+        {
+            throw new System.Exception("StartOfRound.Instance.elevatorTransform is null.");
+        }
+
         var shipTransform = ShipUtils.GetShipTransform();
         if (shipTransform == null)
         {
             throw new System.Exception("Ship transform is null.");
         }
-
 
         var vehicleTransforms = ShipUtils.GetVehicleTransforms();
         if (vehicleTransforms == null)
@@ -55,23 +60,48 @@ internal class CollectCruiserItemManager
                 continue;
             }
 
-            if (!obj.isInShipRoom)
+            var isInShipRoom = obj.isInShipRoom;
+            var isInElevator = obj.isInElevator;
+            var parentTransformName = obj.transform.parent?.name ?? "null";
+
+            Logger.LogDebug(
+                $"Checking object: {obj.name}, isInShipRoom={isInShipRoom}, isInElevator={isInElevator}, " +
+                $"parent={parentTransformName}"
+            );
+
+            if (isInShipRoom)
             {
+                Logger.LogDebug($"Skipping object because it is in ship room. name={obj.name}");
+                continue;
+            }
+
+            if (obj.transform.IsChildOf(elevatorTransform))
+            {
+                Logger.LogDebug($"Skipping object because it is on elevator. name={obj.name}");
                 continue;
             }
 
             if (obj.transform.IsChildOf(shipTransform))
             {
+                Logger.LogDebug($"Skipping object because it is on ship. name={obj.name}");
                 continue;
             }
 
-            var isInCruiser = vehicleTransforms.Any(transform => obj.transform.IsChildOf(transform));
-            if (!isInCruiser)
+            foreach (var vehicleTransform in vehicleTransforms)
             {
-                continue;
-            }
+                if (vehicleTransform == null)
+                {
+                    continue;
+                }
 
-            items.Add(obj);
+                if (!obj.transform.IsChildOf(vehicleTransform))
+                {
+                    continue;
+                }
+
+                Logger.LogDebug($"Adding object. name={obj.name} vehicleParent={vehicleTransform.name}");
+                items.Add(obj);
+            }
         }
 
         return [.. items];
@@ -134,7 +164,7 @@ internal class CollectCruiserItemManager
             throw new System.Exception("StartOfRound.Instance is null.");
         }
 
-        var elevatorTransform = startOfRound.elevatorTransform; ;
+        var elevatorTransform = startOfRound.elevatorTransform;
         if (elevatorTransform == null)
         {
             throw new System.Exception("StartOfRound.Instance.elevatorTransform is null.");
@@ -170,12 +200,22 @@ internal class CollectCruiserItemManager
 
         foreach (var item in items)
         {
-            Logger.LogInfo($"Collecting item: {item.name}");
-
             var offsetX = Random.Range(-offsetXRange, offsetXRange);
+            var oldItemPosition = item.transform.position;
+            var newItemPosition = baseSpawnPosition.Value + new Vector3(offsetX, offsetY, offsetZ);
 
-            item.transform.SetParent(elevatorTransform);
-            item.transform.localPosition = baseSpawnPosition.Value + new Vector3(offsetX, offsetY, offsetZ);
+            Logger.LogInfo($"Collecting item. name={item.name} " +
+                $"oldPosition=({oldItemPosition.x:F2}, {oldItemPosition.y:F2}, {oldItemPosition.z:F2}) " +
+                $"newPosition=({newItemPosition.x:F2}, {newItemPosition.y:F2}, {newItemPosition.z:F2})"
+            );
+
+            item.transform.SetParent(elevatorTransform, worldPositionStays: true);
+            item.transform.position = newItemPosition;
+            item.transform.rotation = Quaternion.identity;
+
+            item.fallTime = 0.0f;
+            item.isInElevator = true;
+            item.isInShipRoom = true;
 
             yield return item;
         }
