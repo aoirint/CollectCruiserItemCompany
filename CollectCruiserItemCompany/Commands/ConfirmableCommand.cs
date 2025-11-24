@@ -67,7 +67,7 @@ internal abstract class ConfirmableCommand : Command
 
     internal bool? IsConfirmed(string[] args)
     {
-        args = args.Select(arg => arg.ToLower()).ToArray();
+        args = [.. args.Select(arg => arg.ToLower())];
 
         if (args.Length == 0)
         {
