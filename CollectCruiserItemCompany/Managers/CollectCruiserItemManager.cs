@@ -95,7 +95,7 @@ internal class CollectCruiserItemManager
         const float offsetZ = 2.0f;
 
         uint seed = System.BitConverter.ToUInt32(System.Guid.NewGuid().ToByteArray(), 0);
-        if (seed == 0) seed = 1;
+        if (seed == 0u) seed = 1u;
         var random = new Unity.Mathematics.Random(seed);
 
         // Chunked calculation of spawn positions
