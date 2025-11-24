@@ -55,6 +55,7 @@ internal static class FindItemUtils
             }
 
             // TODO: Handheld check
+            // TODO: Exclude easter eggs?
 
             if (item.transform.IsChildOf(elevatorTransform))
             {
