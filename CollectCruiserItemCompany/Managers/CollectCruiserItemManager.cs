@@ -203,40 +203,63 @@ internal class CollectCruiserItemManager
         const float offsetY = 0.5f;
         const float offsetZ = 2.0f;
 
-        foreach (var item in items)
+        uint seed = System.BitConverter.ToUInt32(System.Guid.NewGuid().ToByteArray(), 0);
+        if (seed == 0) seed = 1;
+        var random = new Unity.Mathematics.Random(seed);
+
+        // Chunked calculation of spawn positions
+        const int maxChunkSize = 20;
+        foreach (var chunkItems in items.Chunk(maxChunkSize))
         {
-            var offsetX = Random.Range(-offsetXRange, offsetXRange);
-            var offset = new Vector3(offsetX, offsetY, offsetZ);
+            var chunkSize = chunkItems.Count();
 
-            var worldOldItemPosition = item.transform.position;
-            var localNewItemAirPosition = localBaseSpawnPosition + offset;
+            // localNewItemAirPositions
+            Vector3[] positions = [..
+                chunkItems.Select(
+                    offsetVector =>
+                        localBaseSpawnPosition +
+                        new Vector3(random.NextFloat(-offsetXRange, offsetXRange), offsetY, offsetZ)
+                )
+            ];
 
-            var worldNewItemAirPosition = elevatorTransform.TransformPoint(localNewItemAirPosition);
-            var worldNewItemPosition = item.GetItemFloorPosition(worldNewItemAirPosition);
-            var localNewItemPosition = elevatorTransform.InverseTransformPoint(worldNewItemPosition);
+            // worldNewItemAirPositions
+            elevatorTransform.TransformPoints(positions);
 
-            Logger.LogInfo(
-                "Collecting item." +
-                $" name={item.name}" +
-                $" worldOldItemPosition=({worldOldItemPosition.x:F2}, {worldOldItemPosition.y:F2}, {worldOldItemPosition.z:F2})" +
-                $" localNewItemPosition=({localNewItemPosition.x:F2}, {localNewItemPosition.y:F2}, {localNewItemPosition.z:F2})"
-            );
+            // worldNewItemPositions
+            positions = [.. chunkItems.Select((item, index) => item.GetItemFloorPosition(positions[index]))];
 
-            item.transform.SetParent(elevatorTransform);
-            item.transform.position = worldNewItemPosition;
-            item.transform.rotation = Quaternion.identity;
+            // localNewItemPositions
+            elevatorTransform.InverseTransformPoints(positions);
 
-            // Set parameters to start the item falls
-            // NOTE: These positions are local positions.
-            item.fallTime = 0f;
-            item.startFallingPosition = localNewItemPosition;
-            item.targetFloorPosition = localNewItemPosition;
+            foreach (var (item, index) in chunkItems.Select((item, index) => (item, index)))
+            {
+                var worldOldItemPosition = item.transform.position;
+                var localNewItemPosition = positions[index];
+                var worldNewItemPosition = elevatorTransform.TransformPoint(localNewItemPosition);
 
-            item.isInElevator = true;
-            item.isInShipRoom = true;
-            item.hasHitGround = true;
+                Logger.LogInfo(
+                    "Collecting item." +
+                    $" name={item.name}" +
+                    $" worldOldItemPosition=({worldOldItemPosition.x:F2}, {worldOldItemPosition.y:F2}, {worldOldItemPosition.z:F2})" +
+                    $" localNewItemPosition=({localNewItemPosition.x:F2}, {localNewItemPosition.y:F2}, {localNewItemPosition.z:F2})"
+                );
 
-            yield return item;
+                item.transform.SetParent(elevatorTransform);
+                item.transform.position = worldNewItemPosition;
+                item.transform.rotation = Quaternion.identity;
+
+                // Set parameters to start the item falls
+                // NOTE: These positions are local positions.
+                item.fallTime = 0f;
+                item.startFallingPosition = localNewItemPosition;
+                item.targetFloorPosition = localNewItemPosition;
+
+                item.isInElevator = true;
+                item.isInShipRoom = true;
+                item.hasHitGround = true;
+
+                yield return item;
+            }
         }
     }
 }
