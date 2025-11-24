@@ -41,10 +41,10 @@ internal class TerminalPatch
     [HarmonyPrefix]
     public static bool ParsePlayerSentencePrefix(Terminal __instance, ref TerminalNode __result)
     {
-        var collectCruiserItemManager = CollectCruiserItemCompany.CollectCruiserItemManager;
-        if (collectCruiserItemManager == null)
+        var terminalCommandManager = CollectCruiserItemCompany.TerminalCommandManager;
+        if (terminalCommandManager == null)
         {
-            Logger.LogError("CollectCruiserItemManager is null.");
+            Logger.LogError("TerminalCommandManager is null.");
             return true; // Use original method
         }
 
@@ -69,7 +69,7 @@ internal class TerminalPatch
 
         var args = sentence.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
 
-        var customTerminalNode = TerminalCommandHelpers.ParseCommand(args);
+        var customTerminalNode = terminalCommandManager.ParseCommand(args);
         if (customTerminalNode == null)
         {
             return true; // Use original method

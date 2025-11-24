@@ -10,5 +10,33 @@ internal abstract class Command
 
     internal abstract bool IsMatch(string[] args);
 
-    internal abstract TerminalNode Execute(string[] args);
+    internal virtual TerminalNode? ExecutePrefix(string[] args)
+    {
+        return null;
+    }
+
+    internal TerminalNode Execute(string[] args)
+    {
+        var terminalNode = ExecutePrefix(args);
+        if (terminalNode != null)
+        {
+            return terminalNode;
+        }
+
+        terminalNode = ExecuteCore(args);
+
+        ExecuteCorePostfix(terminalNode);
+
+        return terminalNode;
+    }
+
+    internal virtual void ExecutePrefixPostfix(TerminalNode terminalNode)
+    {
+    }
+
+    internal virtual void ExecuteCorePostfix(TerminalNode terminalNode)
+    {
+    }
+
+    internal abstract TerminalNode ExecuteCore(string[] args);
 }

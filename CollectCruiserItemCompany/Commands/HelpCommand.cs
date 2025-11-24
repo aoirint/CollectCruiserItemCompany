@@ -26,7 +26,7 @@ internal class HelpCommand : Command
         return true;
     }
 
-    internal override TerminalNode Execute(string[] args)
+    internal override TerminalNode ExecuteCore(string[] args)
     {
         var builder = new StringBuilder();
 
