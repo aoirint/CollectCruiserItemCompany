@@ -50,6 +50,8 @@ internal class CollectScrapCommand : ConfirmableCommand
 
     internal override ExecuteResult ExecuteConfirm()
     {
+        // TODO: implement scrap collection logic
+
         var builder = new StringBuilder();
 
         builder.AppendLine("All scraps have been collected from the cruiser.");
