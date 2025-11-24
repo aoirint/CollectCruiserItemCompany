@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- DLL name / Mod GUID -->
+    <AssemblyName>com.aoirint.CollectCruiserItemCompany</AssemblyName>
+    <!-- Mod name -->
+    <Product>CollectCruiserItemCompany</Product>
+    <RootNamespace>CollectCruiserItemCompany</RootNamespace>
+    <!-- !!APP_VERSION_MARKER!! -->
+    <Version>0.0.0</Version>
+    <!-- Target framework. https://learn.microsoft.com/en-us/dotnet/standard/frameworks -->
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <!-- C# language version. https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version -->
+    <LangVersion>13.0</LangVersion>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Runtime dependencies -->
+    <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+
+    <!-- Development dependencies -->
+    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="all" />
+
+    <!-- Compile-time only dependencies -->
+    <PackageReference Include="LethalCompany.GameLibs.Steam" Version="73.0.0-ngd.0" IncludeAssets="compile" />
+    <PackageReference Include="UnityEngine.Modules" Version="2022.3.62" IncludeAssets="compile" />
+  </ItemGroup>
+</Project>

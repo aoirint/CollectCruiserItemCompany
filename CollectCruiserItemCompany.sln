@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{506B94FC-CB66-43A8-A632-BC7AED6DA587}") = "CollectCruiserItemCompany", "CollectCruiserItemCompany/CollectCruiserItemCompany.csproj", "{AF373787-DF87-4F31-9B1E-334ED2448DD7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AF373787-DF87-4F31-9B1E-334ED2448DD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF373787-DF87-4F31-9B1E-334ED2448DD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF373787-DF87-4F31-9B1E-334ED2448DD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF373787-DF87-4F31-9B1E-334ED2448DD7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5C5295A6-3CE2-4B0E-985B-F69D7F075F57}
+	EndGlobalSection
+EndGlobal
