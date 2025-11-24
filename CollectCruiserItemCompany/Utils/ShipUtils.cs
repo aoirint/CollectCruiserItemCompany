@@ -112,6 +112,7 @@ internal static class ShipUtils
 
         return [.. vehicleTransforms];
     }
+
     public static Vector3? GetBaseSpawnPosition()
     {
         var startOfRound = StartOfRound.Instance;

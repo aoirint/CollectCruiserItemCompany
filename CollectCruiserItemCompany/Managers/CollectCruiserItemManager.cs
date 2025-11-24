@@ -60,6 +60,9 @@ internal class CollectCruiserItemManager
                 continue;
             }
 
+            items.Add(obj);
+            continue;
+
             var isInShipRoom = obj.isInShipRoom;
             var isInElevator = obj.isInElevator;
             var parentTransformName = obj.transform.parent?.name ?? "null";
@@ -188,11 +191,13 @@ internal class CollectCruiserItemManager
             throw new System.Exception($"Unknown CollectType: {collectType}");
         }
 
-        var baseSpawnPosition = ShipUtils.GetBaseSpawnPosition();
-        if (baseSpawnPosition == null)
+        var worldBaseSpawnPosition = ShipUtils.GetBaseSpawnPosition();
+        if (worldBaseSpawnPosition == null)
         {
             throw new System.Exception("Base spawn position is null.");
         }
+
+        var localBaseSpawnPosition = elevatorTransform.InverseTransformPoint(worldBaseSpawnPosition.Value);
 
         const float offsetXRange = 0.7f;
         const float offsetY = 0.5f;
@@ -201,21 +206,31 @@ internal class CollectCruiserItemManager
         foreach (var item in items)
         {
             var offsetX = Random.Range(-offsetXRange, offsetXRange);
-            var oldItemPosition = item.transform.position;
-            var newItemPosition = baseSpawnPosition.Value + new Vector3(offsetX, offsetY, offsetZ);
+            var offset = new Vector3(offsetX, offsetY, offsetZ);
 
-            Logger.LogInfo($"Collecting item. name={item.name} " +
-                $"oldPosition=({oldItemPosition.x:F2}, {oldItemPosition.y:F2}, {oldItemPosition.z:F2}) " +
-                $"newPosition=({newItemPosition.x:F2}, {newItemPosition.y:F2}, {newItemPosition.z:F2})"
+            var worldOldItemPosition = item.transform.position;
+            var localNewItemPosition = localBaseSpawnPosition + offset;
+
+            Logger.LogInfo(
+                "Collecting item." +
+                $" name={item.name}" +
+                $" worldOldItemPosition=({worldOldItemPosition.x:F2}, {worldOldItemPosition.y:F2}, {worldOldItemPosition.z:F2})" +
+                $" localNewItemPosition=({localNewItemPosition.x:F2}, {localNewItemPosition.y:F2}, {localNewItemPosition.z:F2})"
             );
 
-            item.transform.SetParent(elevatorTransform, worldPositionStays: true);
-            item.transform.position = newItemPosition;
+            item.transform.SetParent(elevatorTransform);
+            item.transform.localPosition = localNewItemPosition;
             item.transform.rotation = Quaternion.identity;
 
-            item.fallTime = 0.0f;
+            // Set parameters to start the item falls
+            // NOTE: These positions are local positions.
+            item.fallTime = 0f;
+            item.startFallingPosition = localNewItemPosition;
+            item.targetFloorPosition = localNewItemPosition;
+
             item.isInElevator = true;
             item.isInShipRoom = true;
+            item.hasHitGround = true;
 
             yield return item;
         }
