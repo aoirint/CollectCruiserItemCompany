@@ -54,6 +54,8 @@ internal static class FindItemUtils
                 continue;
             }
 
+            // TODO: Handheld check
+
             if (item.transform.IsChildOf(elevatorTransform))
             {
                 Logger.LogDebug($"Skipping item because it is on elevator. name={item.name}");

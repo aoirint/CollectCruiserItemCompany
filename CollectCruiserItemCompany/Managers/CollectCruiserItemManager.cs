@@ -60,10 +60,19 @@ internal class CollectCruiserItemManager
         var startOfRound = StartOfRound.Instance ?? throw new System.Exception("StartOfRound.Instance is null.");
         var elevatorTransform = startOfRound.elevatorTransform ?? throw new System.Exception("StartOfRound.Instance.elevatorTransform is null.");
 
+        // TODO: Use the RPC sender player
+        var localPlayer = PlayerUtils.GetLocalPlayer();
+        if (localPlayer == null)
+        {
+            throw new System.Exception("Local player is null.");
+        }
+
         IEnumerable<GrabbableObject> items;
         if (collectType == CollectType.All)
         {
-            items = FindItemUtils.GetAllItemsInCruiser();
+            // FIXME: Debugging workaround
+            items = FindItemUtils.GetAllItems();
+            // items = FindItemUtils.GetAllItemsInCruiser();
         }
         else if (collectType == CollectType.Scrap)
         {
@@ -136,9 +145,14 @@ internal class CollectCruiserItemManager
                 item.startFallingPosition = localNewItemPosition;
                 item.targetFloorPosition = localNewItemPosition;
 
-                // TODO: Item collection into the ship
-                item.isInElevator = true;
-                item.isInShipRoom = true;
+                // Item collection into the ship
+                localPlayer.SetItemInElevator(
+                    true, // droppedInShipRoom
+                    true, // droppedInElevator
+                    item // gObject
+                );
+
+                // Disable drop sound effect
                 item.hasHitGround = true;
 
                 yield return item;
