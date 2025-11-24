@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Linq;
 using System.Text;
 using CollectCruiserItemCompany.Utils;
 
@@ -9,12 +10,14 @@ internal class HelpCommand : Command
 {
     internal override bool IsMatch(string[] args)
     {
+        args = args.Select(arg => arg.ToLower()).ToArray();
+
         if (args.Length == 0)
         {
             return false;
         }
 
-        var command = args[0].ToLower();
+        var command = args[0];
         if (command != "collect")
         {
             return false;
