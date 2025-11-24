@@ -18,7 +18,7 @@ internal class HelpCommand : Command
         }
 
         var command = args[0];
-        if (command != "collect")
+        if (!KeywordUtils.IsCollectCommand(command))
         {
             return false;
         }

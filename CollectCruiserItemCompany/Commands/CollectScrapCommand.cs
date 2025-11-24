@@ -19,11 +19,11 @@ internal class CollectScrapCommand : ConfirmableCommand
 
         var command = args[0];
         var arg1 = args[1];
-        if (command != "collect")
+        if (!KeywordUtils.IsCollectCommand(command))
         {
             return false;
         }
-        if (arg1 != "scrap")
+        if (!KeywordUtils.IsScrapArgument(arg1))
         {
             return false;
         }
