@@ -10,7 +10,7 @@ internal class CollectScrapCommand : ConfirmableCommand
 {
     internal override bool IsMatch(string[] args)
     {
-        args = args.Select(arg => arg.ToLower()).ToArray();
+        args = [.. args.Select(arg => arg.ToLower())];
 
         if (args.Length < 2)
         {
