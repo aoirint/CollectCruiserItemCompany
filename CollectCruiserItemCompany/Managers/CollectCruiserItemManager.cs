@@ -20,110 +20,6 @@ internal class CollectCruiserItemManager
 {
     internal static ManualLogSource Logger => CollectCruiserItemCompany.Logger!;
 
-    internal IEnumerable<GrabbableObject> GetAllItemsInCruiser()
-    {
-        var startOfRound = StartOfRound.Instance;
-        if (startOfRound == null)
-        {
-            throw new System.Exception("StartOfRound.Instance is null.");
-        }
-
-        var elevatorTransform = startOfRound.elevatorTransform;
-        if (elevatorTransform == null)
-        {
-            throw new System.Exception("StartOfRound.Instance.elevatorTransform is null.");
-        }
-
-        var shipTransform = ShipUtils.GetShipTransform();
-        if (shipTransform == null)
-        {
-            throw new System.Exception("Ship transform is null.");
-        }
-
-        var vehicleTransforms = ShipUtils.GetVehicleTransforms();
-        if (vehicleTransforms == null)
-        {
-            throw new System.Exception("Vehicle transforms is null.");
-        }
-
-        var grabbableObjects = Object.FindObjectsOfType<GrabbableObject>();
-        if (grabbableObjects == null)
-        {
-            throw new System.Exception("Failed to find GrabbableObject objects.");
-        }
-
-        List<GrabbableObject> items = [];
-        foreach (var obj in grabbableObjects)
-        {
-            if (obj == null)
-            {
-                continue;
-            }
-
-            items.Add(obj);
-            continue;
-
-            var isInShipRoom = obj.isInShipRoom;
-            var isInElevator = obj.isInElevator;
-            var parentTransformName = obj.transform.parent?.name ?? "null";
-
-            Logger.LogDebug(
-                $"Checking object: {obj.name}, isInShipRoom={isInShipRoom}, isInElevator={isInElevator}, " +
-                $"parent={parentTransformName}"
-            );
-
-            if (isInShipRoom)
-            {
-                Logger.LogDebug($"Skipping object because it is in ship room. name={obj.name}");
-                continue;
-            }
-
-            if (obj.transform.IsChildOf(elevatorTransform))
-            {
-                Logger.LogDebug($"Skipping object because it is on elevator. name={obj.name}");
-                continue;
-            }
-
-            if (obj.transform.IsChildOf(shipTransform))
-            {
-                Logger.LogDebug($"Skipping object because it is on ship. name={obj.name}");
-                continue;
-            }
-
-            foreach (var vehicleTransform in vehicleTransforms)
-            {
-                if (vehicleTransform == null)
-                {
-                    continue;
-                }
-
-                if (!obj.transform.IsChildOf(vehicleTransform))
-                {
-                    continue;
-                }
-
-                Logger.LogDebug($"Adding object. name={obj.name} vehicleParent={vehicleTransform.name}");
-                items.Add(obj);
-            }
-        }
-
-        return [.. items];
-    }
-
-    internal IEnumerable<GrabbableObject> GetAllScraps()
-    {
-        var allItems = GetAllItemsInCruiser();
-        var scraps = allItems.Where(item => item.itemProperties != null && item.itemProperties.isScrap);
-        return scraps;
-    }
-
-    internal IEnumerable<GrabbableObject> GetAllTools()
-    {
-        var allItems = GetAllItemsInCruiser();
-        var tools = allItems.Where(item => item.itemProperties != null && !item.itemProperties.isScrap);
-        return tools;
-    }
-
     internal IEnumerator CollectToShipCoroutine(CollectType collectType)
     {
         if (!NetworkUtils.IsServer())
@@ -161,43 +57,29 @@ internal class CollectCruiserItemManager
 
     internal IEnumerator<GrabbableObject> CollectToShipCoroutineInternal(CollectType collectType)
     {
-        var startOfRound = StartOfRound.Instance;
-        if (startOfRound == null)
-        {
-            throw new System.Exception("StartOfRound.Instance is null.");
-        }
-
-        var elevatorTransform = startOfRound.elevatorTransform;
-        if (elevatorTransform == null)
-        {
-            throw new System.Exception("StartOfRound.Instance.elevatorTransform is null.");
-        }
+        var startOfRound = StartOfRound.Instance ?? throw new System.Exception("StartOfRound.Instance is null.");
+        var elevatorTransform = startOfRound.elevatorTransform ?? throw new System.Exception("StartOfRound.Instance.elevatorTransform is null.");
 
         IEnumerable<GrabbableObject> items;
         if (collectType == CollectType.All)
         {
-            items = GetAllItemsInCruiser();
+            items = FindItemUtils.GetAllItemsInCruiser();
         }
         else if (collectType == CollectType.Scrap)
         {
-            items = GetAllScraps();
+            items = FindItemUtils.GetAllScraps();
         }
         else if (collectType == CollectType.Tool)
         {
-            items = GetAllTools();
+            items = FindItemUtils.GetAllTools();
         }
         else
         {
             throw new System.Exception($"Unknown CollectType: {collectType}");
         }
 
-        var worldBaseSpawnPosition = ShipUtils.GetBaseSpawnPosition();
-        if (worldBaseSpawnPosition == null)
-        {
-            throw new System.Exception("Base spawn position is null.");
-        }
-
-        var localBaseSpawnPosition = elevatorTransform.InverseTransformPoint(worldBaseSpawnPosition.Value);
+        var worldBaseSpawnPosition = ShipUtils.GetBaseSpawnPosition() ?? throw new System.Exception("Base spawn position is null.");
+        var localBaseSpawnPosition = elevatorTransform.InverseTransformPoint(worldBaseSpawnPosition);
 
         const float offsetXRange = 0.7f;
         const float offsetY = 0.5f;
@@ -254,6 +136,7 @@ internal class CollectCruiserItemManager
                 item.startFallingPosition = localNewItemPosition;
                 item.targetFloorPosition = localNewItemPosition;
 
+                // TODO: Item collection into the ship
                 item.isInElevator = true;
                 item.isInShipRoom = true;
                 item.hasHitGround = true;
