@@ -1,6 +1,7 @@
 #nullable enable
 
 using BepInEx.Logging;
+using CollectCruiserItemCompany.Managers;
 using HarmonyLib;
 
 namespace CollectCruiserItemCompany.Patches;
@@ -18,10 +19,31 @@ internal class TerminalPatch
         if (collectCruiserItemManager == null)
         {
             Logger.LogError("CollectCruiserItemManager is null.");
-            return true;
+            return true; // Use original method
         }
 
-        // TODO: Implement custom logic here. Return false to skip original method.
-        return true;
+        var screenTextInputField = __instance.screenText;
+        if (screenTextInputField == null)
+        {
+            Logger.LogError("Terminal.screenText is null.");
+            return true; // Use original method
+        }
+
+        var textAdded = __instance.textAdded;
+
+        var sentence = screenTextInputField.text;
+        sentence = sentence.Substring(sentence.Length - textAdded);
+        sentence = __instance.RemovePunctuation(sentence);
+
+        var args = sentence.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
+
+        var customTerminalNode = TerminalCommandHelpers.ParseCommand(args);
+        if (customTerminalNode == null)
+        {
+            return true; // Use original method
+        }
+
+        __result = customTerminalNode;
+        return false; // Skip original method
     }
 }
