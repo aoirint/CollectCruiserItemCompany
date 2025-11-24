@@ -45,10 +45,6 @@ internal class HelpCommand : Command
         builder.AppendLine("Collect all items from the cruiser into your ship.");
         builder.AppendLine();
 
-        builder.AppendLine(">VIEW COLLECT [TYPE]");
-        builder.AppendLine("View the list of items that would be collected.");
-        builder.AppendLine();
-
         return new ExecuteResult(
             terminalNode: TerminalUtils.CreateTerminalNode(
                 displayText: builder.ToString(),
