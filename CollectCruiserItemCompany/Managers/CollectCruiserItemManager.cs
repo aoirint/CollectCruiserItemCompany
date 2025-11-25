@@ -90,7 +90,13 @@ internal class CollectCruiserItemManager
         var worldBaseSpawnPosition = ShipUtils.GetBaseSpawnPosition() ?? throw new System.Exception("Base spawn position is null.");
         var localBaseSpawnPosition = elevatorTransform.InverseTransformPoint(worldBaseSpawnPosition);
 
-        foreach (var item in TeleportItemUtils.TeleportItems(items, elevatorTransform, localBaseSpawnPosition, localPlayer))
+        foreach (var item in TeleportItemUtils.TeleportItems(
+            items,
+            elevatorTransform,
+            localBaseSpawnPosition,
+            localPlayer,
+            TeleportMethod.Throw
+        ))
         {
             yield return item;
         }
