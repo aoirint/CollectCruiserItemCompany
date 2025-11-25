@@ -81,8 +81,9 @@ internal static class TeleportItemUtils
             item // gObject
         );
 
-        // Disable drop sound effect.
-        item.hasHitGround = true;
+        // NOTE: Do not set hasHitGround to true. This would disable the easter egg explosion.
+        // TODO: this is not working for other players yet.
+        item.hasHitGround = false;
     }
 
     internal static IEnumerable<GrabbableObject> TeleportItemsToShip(
