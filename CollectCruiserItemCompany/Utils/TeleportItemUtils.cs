@@ -56,40 +56,6 @@ internal static class TeleportItemUtils
         }
     }
 
-    private static void PlaceObjectClientRpc(
-        PlayerControllerB instance,
-        NetworkObjectReference parentObjectReference,
-        Vector3 placePositionOffset,
-        bool matchRotationOfParent,
-        NetworkObjectReference grabbedObject
-    )
-    {
-        var placeObjectClientRpcMethod = AccessTools.Method(typeof(PlayerControllerB), nameof(PlayerControllerB.PlaceObjectClientRpc));
-        if (placeObjectClientRpcMethod == null)
-        {
-            Logger.LogError("Could not find PlayerControllerB.PlaceObjectClientRpc method.");
-            return;
-        }
-
-        try
-        {
-            placeObjectClientRpcMethod.Invoke(
-                instance,
-                [
-                    parentObjectReference,
-                    placePositionOffset,
-                    matchRotationOfParent,
-                    grabbedObject
-                ]
-            );
-        }
-        catch (System.Exception error)
-        {
-            Logger.LogError($"Error invoking PlayerControllerB.PlaceObjectClientRpc: {error}");
-            return;
-        }
-    }
-
     private static void TeleportItemForOwnerInternal(
         GrabbableObject item,
         Transform newParentTransform,
@@ -119,49 +85,11 @@ internal static class TeleportItemUtils
         item.hasHitGround = true;
     }
 
-    private static void TeleportItemForClientInternal(
-        GrabbableObject item,
-        NetworkObjectReference newParentObjectReference,
-        Vector3 newLocalPosition,
-        PlayerControllerB localPlayer,
-        ClientTeleportMethod method
-    )
-    {
-        if (method == ClientTeleportMethod.Throw)
-        {
-            ThrowObjectClientRpc(
-                localPlayer, // instance
-                true, // droppedInElevator
-                true, // droppedInShipRoom
-                newLocalPosition, // targetFloorPosition
-                item.NetworkObject, // grabbedObject
-                -1 // floorYRot
-            );
-        }
-        else if (method == ClientTeleportMethod.Place)
-        {
-            PlaceObjectClientRpc(
-                localPlayer, // instance
-                newParentObjectReference, // parentObjectReference
-                newLocalPosition, // placePositionOffset
-                false, // matchRotationOfParent
-                item.NetworkObject // grabbedObject
-            );
-        }
-        else
-        {
-            Logger.LogError($"Unknown TeleportMethod: {method}");
-            return;
-        }
-    }
-
-    internal static IEnumerable<GrabbableObject> TeleportItems(
+    internal static IEnumerable<GrabbableObject> TeleportItemsToShip(
         IEnumerable<GrabbableObject> items,
         Transform newParentTransform,
-        NetworkObjectReference newParentObjectReference,
         Vector3 localPosition,
-        PlayerControllerB localPlayer,
-        ClientTeleportMethod method
+        PlayerControllerB localPlayer
     )
     {
         const float offsetXRange = 0.7f;
@@ -210,13 +138,12 @@ internal static class TeleportItemUtils
                     $" name={item.name}" +
                     $" worldOldItemPosition=({worldOldItemPosition.x:F2}, {worldOldItemPosition.y:F2}, {worldOldItemPosition.z:F2})" +
                     $" localNewItemPosition=({localNewItemPosition.x:F2}, {localNewItemPosition.y:F2}, {localNewItemPosition.z:F2})" +
-                    $" worldNewItemPosition=({worldNewItemPosition.x:F2}, {worldNewItemPosition.y:F2}, {worldNewItemPosition.z:F2})" +
-                    $" method={method}"
+                    $" worldNewItemPosition=({worldNewItemPosition.x:F2}, {worldNewItemPosition.y:F2}, {worldNewItemPosition.z:F2})"
                 );
 
                 // TODO: call StunGrenadeItem.SetExplodeOnThrowServerRpc if the item is an easter egg (simulate equip item from old position)
 
-                // NOTE: Throw/Place skips the teleport for the owner of the network object. So we need to teleport for the owner in another way.
+                // NOTE: ThrowObjectClientRpc skips the teleport for the owner of the network object. So we need to teleport for the owner in another way.
                 TeleportItemForOwnerInternal(
                     item,
                     newParentTransform,
@@ -224,12 +151,13 @@ internal static class TeleportItemUtils
                     localPlayer
                 );
 
-                TeleportItemForClientInternal(
-                    item,
-                    newParentObjectReference,
-                    localNewItemPosition,
-                    localPlayer,
-                    method
+                ThrowObjectClientRpc(
+                    localPlayer, // instance
+                    true, // droppedInElevator
+                    true, // droppedInShipRoom
+                    localNewItemPosition, // targetFloorPosition
+                    item.NetworkObject, // grabbedObject
+                    -1 // floorYRot
                 );
 
                 yield return item;

@@ -91,20 +91,11 @@ internal class CollectCruiserItemManager
         var worldBaseSpawnPosition = ShipUtils.GetBaseSpawnPosition() ?? throw new System.Exception("Base spawn position is null.");
         var localBaseSpawnPosition = elevatorTransform.InverseTransformPoint(worldBaseSpawnPosition);
 
-        var shipObject = ShipUtils.GetShipObject() ?? throw new System.Exception("Ship object is null.");
-        var shipNetworkObject = shipObject.GetComponent<NetworkObject>();
-        if (shipNetworkObject == null)
-        {
-            throw new System.Exception("Ship object does not have a NetworkObject component.");
-        }
-
-        foreach (var item in TeleportItemUtils.TeleportItems(
+        foreach (var item in TeleportItemUtils.TeleportItemsToShip(
             items,
             elevatorTransform,
-            shipNetworkObject,
             localBaseSpawnPosition,
-            localPlayer,
-            ClientTeleportMethod.Place
+            localPlayer
         ))
         {
             yield return item;
