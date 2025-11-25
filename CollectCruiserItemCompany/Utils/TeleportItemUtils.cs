@@ -10,9 +10,8 @@ using UnityEngine;
 
 namespace CollectCruiserItemCompany.Utils;
 
-internal enum TeleportMethod
+internal enum ClientTeleportMethod
 {
-    HostOnly,
     Throw,
     Place
 }
@@ -21,7 +20,7 @@ internal static class TeleportItemUtils
 {
     internal static ManualLogSource Logger => CollectCruiserItemCompany.Logger!;
 
-    internal static void ThrowObjectClientRpc(
+    private static void ThrowObjectClientRpc(
         PlayerControllerB instance,
         bool droppedInElevator,
         bool droppedInShipRoom,
@@ -57,7 +56,7 @@ internal static class TeleportItemUtils
         }
     }
 
-    internal static void PlaceObjectClientRpc(
+    private static void PlaceObjectClientRpc(
         PlayerControllerB instance,
         NetworkObjectReference parentObjectReference,
         Vector3 placePositionOffset,
@@ -91,13 +90,78 @@ internal static class TeleportItemUtils
         }
     }
 
+    private static void TeleportItemForOwnerInternal(
+        GrabbableObject item,
+        Transform newParentTransform,
+        Vector3 newLocalPosition,
+        PlayerControllerB localPlayer
+    )
+    {
+        item.transform.SetParent(newParentTransform);
+        item.transform.localPosition = newLocalPosition;
+        item.transform.rotation = Quaternion.identity;
+
+        // Prevent the item teleports to the old position due to fake falling.
+        // NOTE: These positions are local positions.
+        item.fallTime = 0f;
+        item.startFallingPosition = newLocalPosition;
+        item.targetFloorPosition = newLocalPosition;
+
+        // Set the item to follow the parent transform and keep after the current day.
+        // Play the item collection animation if not already played.
+        localPlayer.SetItemInElevator(
+            true, // droppedInShipRoom
+            true, // droppedInElevator
+            item // gObject
+        );
+
+        // Disable drop sound effect.
+        item.hasHitGround = true;
+    }
+
+    private static void TeleportItemForClientInternal(
+        GrabbableObject item,
+        NetworkObjectReference newParentObjectReference,
+        Vector3 newLocalPosition,
+        PlayerControllerB localPlayer,
+        ClientTeleportMethod method
+    )
+    {
+        if (method == ClientTeleportMethod.Throw)
+        {
+            ThrowObjectClientRpc(
+                localPlayer, // instance
+                true, // droppedInElevator
+                true, // droppedInShipRoom
+                newLocalPosition, // targetFloorPosition
+                item.NetworkObject, // grabbedObject
+                -1 // floorYRot
+            );
+        }
+        else if (method == ClientTeleportMethod.Place)
+        {
+            PlaceObjectClientRpc(
+                localPlayer, // instance
+                newParentObjectReference, // parentObjectReference
+                newLocalPosition, // placePositionOffset
+                false, // matchRotationOfParent
+                item.NetworkObject // grabbedObject
+            );
+        }
+        else
+        {
+            Logger.LogError($"Unknown TeleportMethod: {method}");
+            return;
+        }
+    }
+
     internal static IEnumerable<GrabbableObject> TeleportItems(
         IEnumerable<GrabbableObject> items,
         Transform newParentTransform,
         NetworkObjectReference newParentObjectReference,
         Vector3 localPosition,
         PlayerControllerB localPlayer,
-        TeleportMethod method
+        ClientTeleportMethod method
     )
     {
         const float offsetXRange = 0.7f;
@@ -152,55 +216,21 @@ internal static class TeleportItemUtils
 
                 // TODO: call StunGrenadeItem.SetExplodeOnThrowServerRpc if the item is an easter egg (simulate equip item from old position)
 
-                if (method == TeleportMethod.HostOnly)
-                {
-                    item.transform.SetParent(newParentTransform);
-                    item.transform.position = worldNewItemPosition;
-                    item.transform.rotation = Quaternion.identity;
+                // NOTE: Throw/Place skips the teleport for the owner of the network object. So we need to teleport for the owner in another way.
+                TeleportItemForOwnerInternal(
+                    item,
+                    newParentTransform,
+                    localNewItemPosition,
+                    localPlayer
+                );
 
-                    // Prevent the item teleports to the old position due to fake falling.
-                    // NOTE: These positions are local positions.
-                    item.fallTime = 0f;
-                    item.startFallingPosition = localNewItemPosition;
-                    item.targetFloorPosition = localNewItemPosition;
-
-                    // Set the item to follow the parent transform and keep after the current day.
-                    // Play the item collection animation if not already played.
-                    localPlayer.SetItemInElevator(
-                        true, // droppedInShipRoom
-                        true, // droppedInElevator
-                        item // gObject
-                    );
-
-                    // Disable drop sound effect.
-                    item.hasHitGround = true;
-                }
-                else if (method == TeleportMethod.Throw)
-                {
-                    ThrowObjectClientRpc(
-                        localPlayer, // instance
-                        true, // droppedInElevator
-                        true, // droppedInShipRoom
-                        localNewItemPosition, // targetFloorPosition
-                        item.NetworkObject, // grabbedObject
-                        -1 // floorYRot
-                    );
-                }
-                else if (method == TeleportMethod.Place)
-                {
-                    PlaceObjectClientRpc(
-                        localPlayer, // instance
-                        newParentObjectReference, // parentObjectReference
-                        localNewItemPosition, // placePositionOffset
-                        false, // matchRotationOfParent
-                        item.NetworkObject // grabbedObject
-                    );
-                }
-                else
-                {
-                    Logger.LogError($"Unknown TeleportMethod: {method}");
-                    continue;
-                }
+                TeleportItemForClientInternal(
+                    item,
+                    newParentObjectReference,
+                    localNewItemPosition,
+                    localPlayer,
+                    method
+                );
 
                 yield return item;
             }

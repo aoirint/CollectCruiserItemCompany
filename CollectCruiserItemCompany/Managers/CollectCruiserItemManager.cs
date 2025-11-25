@@ -104,7 +104,7 @@ internal class CollectCruiserItemManager
             shipNetworkObject,
             localBaseSpawnPosition,
             localPlayer,
-            TeleportMethod.Place
+            ClientTeleportMethod.Place
         ))
         {
             yield return item;
