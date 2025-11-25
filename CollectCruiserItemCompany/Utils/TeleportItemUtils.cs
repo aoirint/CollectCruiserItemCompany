@@ -141,7 +141,12 @@ internal static class TeleportItemUtils
                     $" worldNewItemPosition=({worldNewItemPosition.x:F2}, {worldNewItemPosition.y:F2}, {worldNewItemPosition.z:F2})"
                 );
 
-                // TODO: call StunGrenadeItem.SetExplodeOnThrowServerRpc if the item is an easter egg (simulate equip item from old position)
+                // Simulate the easter egg explosion logic in GrabbableObject.EquipItem based on the old position.
+                if (item is StunGrenadeItem stunGrenadeItem)
+                {
+                    Logger.LogDebug($"Simulating easter egg explosion logic before teleporting. name={item.name}");
+                    stunGrenadeItem.SetExplodeOnThrowServerRpc();
+                }
 
                 // NOTE: ThrowObjectClientRpc skips the teleport for the owner of the network object. So we need to teleport for the owner in another way.
                 TeleportItemForOwnerInternal(
