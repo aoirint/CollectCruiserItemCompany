@@ -13,7 +13,8 @@ namespace CollectCruiserItemCompany.Utils;
 internal enum TeleportMethod
 {
     HostOnly,
-    Throw
+    Throw,
+    Place
 }
 
 internal static class TeleportItemUtils
@@ -56,9 +57,44 @@ internal static class TeleportItemUtils
         }
     }
 
+    internal static void PlaceObjectClientRpc(
+        PlayerControllerB instance,
+        NetworkObjectReference parentObjectReference,
+        Vector3 placePositionOffset,
+        bool matchRotationOfParent,
+        NetworkObjectReference grabbedObject
+    )
+    {
+        var placeObjectClientRpcMethod = AccessTools.Method(typeof(PlayerControllerB), nameof(PlayerControllerB.PlaceObjectClientRpc));
+        if (placeObjectClientRpcMethod == null)
+        {
+            Logger.LogError("Could not find PlayerControllerB.PlaceObjectClientRpc method.");
+            return;
+        }
+
+        try
+        {
+            placeObjectClientRpcMethod.Invoke(
+                instance,
+                [
+                    parentObjectReference,
+                    placePositionOffset,
+                    matchRotationOfParent,
+                    grabbedObject
+                ]
+            );
+        }
+        catch (System.Exception error)
+        {
+            Logger.LogError($"Error invoking PlayerControllerB.PlaceObjectClientRpc: {error}");
+            return;
+        }
+    }
+
     internal static IEnumerable<GrabbableObject> TeleportItems(
         IEnumerable<GrabbableObject> items,
         Transform newParentTransform,
+        NetworkObjectReference newParentObjectReference,
         Vector3 localPosition,
         PlayerControllerB localPlayer,
         TeleportMethod method
@@ -137,7 +173,7 @@ internal static class TeleportItemUtils
                     // Disable drop sound effect.
                     item.hasHitGround = true;
                 }
-                else
+                else if (method == TeleportMethod.Throw)
                 {
                     ThrowObjectClientRpc(
                         localPlayer, // instance
@@ -147,6 +183,21 @@ internal static class TeleportItemUtils
                         item.NetworkObject, // grabbedObject
                         -1 // floorYRot
                     );
+                }
+                else if (method == TeleportMethod.Place)
+                {
+                    PlaceObjectClientRpc(
+                        localPlayer, // instance
+                        newParentObjectReference, // parentObjectReference
+                        localNewItemPosition, // placePositionOffset
+                        false, // matchRotationOfParent
+                        item.NetworkObject // grabbedObject
+                    );
+                }
+                else
+                {
+                    Logger.LogError($"Unknown TeleportMethod: {method}");
+                    continue;
                 }
 
                 yield return item;

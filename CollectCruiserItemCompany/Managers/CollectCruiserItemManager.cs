@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Logging;
 using CollectCruiserItemCompany.Utils;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace CollectCruiserItemCompany.Managers;
@@ -90,12 +91,20 @@ internal class CollectCruiserItemManager
         var worldBaseSpawnPosition = ShipUtils.GetBaseSpawnPosition() ?? throw new System.Exception("Base spawn position is null.");
         var localBaseSpawnPosition = elevatorTransform.InverseTransformPoint(worldBaseSpawnPosition);
 
+        var shipObject = ShipUtils.GetShipObject() ?? throw new System.Exception("Ship object is null.");
+        var shipNetworkObject = shipObject.GetComponent<NetworkObject>();
+        if (shipNetworkObject == null)
+        {
+            throw new System.Exception("Ship object does not have a NetworkObject component.");
+        }
+
         foreach (var item in TeleportItemUtils.TeleportItems(
             items,
             elevatorTransform,
+            shipNetworkObject,
             localBaseSpawnPosition,
             localPlayer,
-            TeleportMethod.Throw
+            TeleportMethod.Place
         ))
         {
             yield return item;
