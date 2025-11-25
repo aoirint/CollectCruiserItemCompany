@@ -150,6 +150,8 @@ internal static class TeleportItemUtils
                     $" method={method}"
                 );
 
+                // TODO: call StunGrenadeItem.SetExplodeOnThrowServerRpc if the item is an easter egg (simulate equip item from old position)
+
                 if (method == TeleportMethod.HostOnly)
                 {
                     item.transform.SetParent(newParentTransform);
