@@ -81,9 +81,9 @@ internal static class TeleportItemUtils
             item // gObject
         );
 
-        // NOTE: Do not set hasHitGround to true. This would disable the easter egg explosion.
-        // TODO: this is not working for other players yet.
-        item.hasHitGround = false;
+        // NOTE: Do not update hasHitGround. This would desync the easter egg explosion.
+        // TODO: Find a way to sync hasHitGround using vanilla Client RPCs.
+        // item.hasHitGround = false;
     }
 
     internal static IEnumerable<GrabbableObject> TeleportItemsToShip(
@@ -142,12 +142,13 @@ internal static class TeleportItemUtils
                     $" worldNewItemPosition=({worldNewItemPosition.x:F2}, {worldNewItemPosition.y:F2}, {worldNewItemPosition.z:F2})"
                 );
 
-                // Simulate the easter egg explosion logic in GrabbableObject.EquipItem based on the old position.
-                if (item is StunGrenadeItem stunGrenadeItem)
-                {
-                    Logger.LogDebug($"Simulating easter egg explosion logic before teleporting. name={item.name}");
-                    stunGrenadeItem.SetExplodeOnThrowServerRpc();
-                }
+                // TODO: Simulate the easter egg explosion logic in GrabbableObject.EquipItem based on the old position.
+                // NOTE: This would not work because hasHitGround does not get synced.
+                // if (item is StunGrenadeItem stunGrenadeItem)
+                // {
+                //     Logger.LogDebug($"Simulating easter egg explosion logic before teleporting. name={item.name}");
+                //     stunGrenadeItem.SetExplodeOnThrowServerRpc();
+                // }
 
                 // NOTE: ThrowObjectClientRpc skips the teleport for the owner of the network object. So we need to teleport for the owner in another way.
                 TeleportItemForOwnerInternal(
