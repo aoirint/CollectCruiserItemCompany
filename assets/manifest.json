@@ -2,7 +2,7 @@
     "name": "CollectCruiserItemCompany",
     "version_number": "0.0.0",
     "website_url": "https://github.com/aoirint/CollectCruiserItemCompany",
-    "description": "TBW",
+    "description": "Collects items from the cruiser into the ship on the Company and in some limited situations.",
     "dependencies": [
         "BepInEx-BepInExPack-5.4.2100"
     ]
