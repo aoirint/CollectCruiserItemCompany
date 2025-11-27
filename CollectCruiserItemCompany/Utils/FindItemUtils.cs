@@ -123,6 +123,8 @@ internal static class FindItemUtils
                 Logger.LogDebug($"Take item. itemName={itemName} vehicleParent={vehicleTransform.name}");
                 yield return item;
             }
+
+            Logger.LogDebug($"Skipping item because it is outside cruiser. itemName={itemName}");
         }
     }
 
