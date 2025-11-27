@@ -130,6 +130,18 @@ internal class CollectTypeCommand : ConfirmableCommand
         {
             builder.AppendLine("Starting collection of all tools from the cruiser.");
         }
+        else
+        {
+            Logger.LogError($"Unknown CollectType. CollectType={CollectType}");
+
+            return new ExecuteResult(
+                terminalNode: CreateCollectionRequestFailedNode(),
+                nextWaitingCommand: null
+            );
+        }
+
+        builder.AppendLine("");
+        builder.AppendLine("If the host player does not allow collection by clients, this request will be ignored.");
 
         return new ExecuteResult(
             terminalNode: TerminalUtils.CreateTerminalNode(
