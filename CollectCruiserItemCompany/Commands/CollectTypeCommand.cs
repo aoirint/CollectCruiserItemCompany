@@ -183,7 +183,7 @@ internal class CollectTypeCommand : ConfirmableCommand
     {
         var builder = new StringBuilder();
 
-        builder.AppendLine("Failed to request collection.");
+        builder.AppendLine("Failed to start collection.");
 
         return TerminalUtils.CreateTerminalNode(
             displayText: builder.ToString(),
