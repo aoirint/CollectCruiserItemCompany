@@ -17,18 +17,6 @@ internal enum ClientTeleportMethod
     Place
 }
 
-internal class TeleportItemStepResult
-{
-    internal GrabbableObject Item;
-    internal bool IsLastItemInChunk;
-
-    internal TeleportItemStepResult(GrabbableObject item, bool isLastItemInChunk)
-    {
-        Item = item;
-        IsLastItemInChunk = isLastItemInChunk;
-    }
-}
-
 internal static class TeleportItemUtils
 {
     internal static ManualLogSource Logger => CollectCruiserItemCompany.Logger!;
@@ -99,7 +87,7 @@ internal static class TeleportItemUtils
         // item.hasHitGround = false;
     }
 
-    internal static IEnumerable<TeleportItemStepResult> TeleportItemsToShip(
+    internal static IEnumerable<GrabbableObject> TeleportItemsToShip(
         IEnumerable<GrabbableObject> items,
         Transform newParentTransform,
         Vector3 localPosition,
@@ -180,10 +168,7 @@ internal static class TeleportItemUtils
                     -1 // floorYRot
                 );
 
-                yield return new TeleportItemStepResult(
-                    item,
-                    isLastItemInChunk: index == chunkSize - 1
-                );
+                yield return item;
             }
         }
     }

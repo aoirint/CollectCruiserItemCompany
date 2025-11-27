@@ -82,22 +82,14 @@ internal class CollectCruiserItemManager
         var worldBaseSpawnPosition = ShipUtils.GetBaseSpawnPosition() ?? throw new System.Exception("Base spawn position is null.");
         var localBaseSpawnPosition = elevatorTransform.InverseTransformPoint(worldBaseSpawnPosition);
 
-        foreach (var item in TeleportItemUtils.TeleportItemsToShip(
+        foreach (var _ in TeleportItemUtils.TeleportItemsToShip(
             items,
             elevatorTransform,
             localBaseSpawnPosition,
             localPlayer
         ))
         {
-            if (item.IsLastItemInChunk)
-            {
-                // Small delay to avoid overwhelming the network
-                yield return new WaitForSeconds(0.1f);
-            }
-            else
-            {
-                yield return null;
-            }
+            yield return new WaitForSeconds(0.1f); // 10 seconds per 100 items
         }
     }
 }
