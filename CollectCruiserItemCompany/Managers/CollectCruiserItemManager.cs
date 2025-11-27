@@ -2,11 +2,8 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using BepInEx.Logging;
 using CollectCruiserItemCompany.Utils;
-using Unity.Netcode;
-using UnityEngine;
 
 namespace CollectCruiserItemCompany.Managers;
 

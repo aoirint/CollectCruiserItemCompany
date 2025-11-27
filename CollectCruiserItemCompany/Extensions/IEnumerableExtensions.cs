@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CollectCruiserItemCompany.Utils;
+namespace CollectCruiserItemCompany.Extensions;
 
 internal static class IEnumerableExtensions
 {

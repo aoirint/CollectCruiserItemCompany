@@ -1,7 +1,6 @@
 #nullable enable
 
 using BepInEx.Logging;
-using CollectCruiserItemCompany.Managers;
 using HarmonyLib;
 
 namespace CollectCruiserItemCompany.Patches;

@@ -3,7 +3,6 @@
 using BepInEx.Logging;
 using CollectCruiserItemCompany.NetworkObjects;
 using HarmonyLib;
-using UnityEngine;
 
 namespace CollectCruiserItemCompany.Patches;
 
