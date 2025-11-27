@@ -20,6 +20,12 @@ Host only; clients are not required. However, only clients with this mod install
 
 Item positions are synchronized for all players, even if they don't have this mod installed.
 
+## Where items are moved to
+
+Moved items are placed on the ship floor that is the default position for out-of-bounds items.
+
+Each item is placed with a small offset to avoid overlapping.
+
 ## Configuration
 
 | Name | Type | Default | Description |
