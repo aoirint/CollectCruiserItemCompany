@@ -1,6 +1,6 @@
 # CollectCruiserItemCompany
 
-TBW
+A Lethal Company mod that collects items inside the cruiser into the ship floor on the Company and in some limited situations.
 
 - [User guide](./assets/README.md)
 
