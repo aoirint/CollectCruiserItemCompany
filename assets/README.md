@@ -26,7 +26,11 @@ Moved items are placed on the ship floor that is the default position for out-of
 
 Each item is placed with a small offset to avoid overlapping.
 
-## Configuration
+## Limitations
+
+- **Easter eggs are not collected to avoid spoiling their explosion.**
+
+## Configurations
 
 | Name | Type | Default | Description |
 |:--------|:-----|:--------|:------------|
