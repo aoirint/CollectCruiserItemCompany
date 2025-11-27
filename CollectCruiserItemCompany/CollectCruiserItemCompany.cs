@@ -15,6 +15,8 @@ public class CollectCruiserItemCompany : BaseUnityPlugin
 
     internal static Harmony harmony = new(MyPluginInfo.PLUGIN_GUID);
 
+    internal static LandingHistoryManager LandingHistoryManager { get; } = new();
+
     internal static TerminalCommandManager TerminalCommandManager { get; } = new();
 
     internal static CollectCruiserItemManager CollectCruiserItemManager { get; } = new();

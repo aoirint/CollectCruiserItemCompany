@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using BepInEx.Logging;
+using CollectCruiserItemCompany.Helpers;
 using CollectCruiserItemCompany.Utils;
 using UnityEngine;
 
@@ -19,11 +20,39 @@ internal class CollectCruiserItemManager
 {
     internal static ManualLogSource Logger => CollectCruiserItemCompany.Logger!;
 
+    internal bool IsCruiserCollectionAllowed()
+    {
+        Logger.LogDebug("Checking if cruiser collection is allowed.");
+
+        var isLandedOnCompany = RoundHelpers.IsLandedOnCompany();
+        var IsInFirstDayOrbitAndRoutingToCompany = RoundHelpers.IsInFirstDayOrbitAndRoutingToCompany();
+        var isInOrbitAndLastLandedOnCompanyAndRoutingToCompany = RoundHelpers.IsInOrbitAndLastLandedOnCompanyAndRoutingToCompany();
+
+        Logger.LogDebug(
+            "Flags:" +
+            $" IsLandedOnCompany={isLandedOnCompany}" +
+            $" IsInFirstDayOrbitAndRoutingToCompany={IsInFirstDayOrbitAndRoutingToCompany}" +
+            $" isInOrbitAndLastLandedOnCompanyAndRoutingToCompany={isInOrbitAndLastLandedOnCompanyAndRoutingToCompany}"
+        );
+
+        return (
+            isLandedOnCompany ||
+            IsInFirstDayOrbitAndRoutingToCompany ||
+            isInOrbitAndLastLandedOnCompanyAndRoutingToCompany
+        );
+    }
+
     internal IEnumerator CollectToShipCoroutine(CollectType collectType)
     {
         if (!NetworkUtils.IsServer())
         {
             Logger.LogWarning("CollectToShipCoroutine called on client. Ignoring.");
+            yield break;
+        }
+
+        if (!IsCruiserCollectionAllowed())
+        {
+            Logger.LogWarning("Cruiser collection is not allowed in the current round state. Aborting collection.");
             yield break;
         }
 

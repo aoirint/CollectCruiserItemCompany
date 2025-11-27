@@ -50,6 +50,17 @@ internal class CollectTypeCommand : ConfirmableCommand
 
     internal override ExecuteResult? ExecuteCore(string[] args)
     {
+        var isCollectionAllowed = CollectCruiserItemCompany.CollectCruiserItemManager.IsCruiserCollectionAllowed();
+        if (!isCollectionAllowed)
+        {
+            Logger.LogInfo("Cruiser collection is not allowed in the current round state. Cannot proceed with collection request.");
+
+            return new ExecuteResult(
+                terminalNode: CreateCollectionRequestNotAllowedNode(),
+                nextWaitingCommand: null
+            );
+        }
+
         var builder = new StringBuilder();
 
         if (CollectType == CollectType.All)
@@ -79,13 +90,24 @@ internal class CollectTypeCommand : ConfirmableCommand
 
     internal override ExecuteResult ExecuteConfirm()
     {
+        var isCollectionAllowed = CollectCruiserItemCompany.CollectCruiserItemManager.IsCruiserCollectionAllowed();
+        if (!isCollectionAllowed)
+        {
+            Logger.LogInfo("Cruiser collection is not allowed in the current round state. Cannot proceed with collection request.");
+
+            return new ExecuteResult(
+                terminalNode: CreateCollectionRequestNotAllowedNode(),
+                nextWaitingCommand: null
+            );
+        }
+
         var collectionNetworkBehaviour = NetworkBehaviourUtils.GetCollectionNetworkBehaviour();
         if (collectionNetworkBehaviour == null)
         {
             Logger.LogError("CollectionNetworkBehaviour is null. Cannot send collect request.");
 
             return new ExecuteResult(
-                terminalNode: CreateCollectionRequestFailedNode(),
+                terminalNode: CreateCollectionRequestNotAllowedNode(),
                 nextWaitingCommand: null
             );
         }
@@ -133,10 +155,18 @@ internal class CollectTypeCommand : ConfirmableCommand
         );
     }
 
+    internal TerminalNode CreateCollectionRequestNotAllowedNode()
+    {
+        return TerminalUtils.CreateTerminalNode(
+            displayText: "Collection is not allowed currently.",
+            clearPreviousText: false
+        );
+    }
+
     internal TerminalNode CreateCollectionRequestFailedNode()
     {
         return TerminalUtils.CreateTerminalNode(
-            displayText: "Error: Failed to request collection.",
+            displayText: "Failed to request collection.",
             clearPreviousText: false
         );
     }
