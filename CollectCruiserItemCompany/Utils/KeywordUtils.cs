@@ -12,7 +12,7 @@ internal static class KeywordUtils
     {
         keyword = keyword.ToLower();
 
-        if (keyword == "collect" || keyword == "colect")
+        if (keyword == "collect" || keyword == "colect" || keyword == "collec")
         {
             return true;
         }
