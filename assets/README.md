@@ -20,10 +20,10 @@ Use the terminal command `collect`.
 
 | Command | Description |
 |:--------|:------------|
-| collect | Show help. |
-| collect scrap | Collect all scraps from the cruiser. |
-| collect tool | Collect all tools from the cruiser. |
-| collect all | Collect all items from the cruiser. |
+| `collect` | Show help. |
+| `collect scrap` | Collect all scraps from the cruiser. |
+| `collect tool` | Collect all tools from the cruiser. |
+| `collect all` | Collect all items from the cruiser. |
 
 ## Who needs to install
 
