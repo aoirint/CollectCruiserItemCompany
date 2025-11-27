@@ -2,6 +2,30 @@
 
 A Lethal Company mod that collects items inside the cruiser into the ship floor on the Company and in some limited situations.
 
+## What it does
+
+- Cruiser Item Collection by Terminal
+
+## When it activates
+
+Cruiser item collection feature activates when any of these conditions are met:
+
+- While landed on the Company
+- In orbit on the first day (also the day after ejected)
+- In orbit on the next day after landing on the Company, still routing to the Company (in the same session only)
+
+## Who needs to install
+
+Host only; clients are not required. However, only clients with this mod installed can trigger the collection.
+
+Item positions are synchronized for all players, even if they don't have this mod installed.
+
+## Configuration
+
+| Name | Type | Default | Description |
+|:--------|:-----|:--------|:------------|
+| Permission | enum | HostOnly | Controls who can collect items from the cruiser. If HostOnly, only the host can collect items. If Everyone, all players can collect items if they have installed this mod. |
+
 ## FAQ
 
 ### Log shows some ThrowObjectClientRpc errors when collecting. Is this a problem?
