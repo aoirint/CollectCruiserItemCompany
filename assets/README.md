@@ -1,6 +1,6 @@
 # CollectCruiserItemCompany
 
-A Lethal Company mod that collects items inside the cruiser into the ship floor on the Company and in some limited situations.
+A Lethal Company mod that collects items on the cruiser into the ship floor on the Company and in some limited situations.
 
 ## What it does
 
@@ -13,6 +13,17 @@ Cruiser item collection feature activates when any of these conditions are met:
 - While landed on the Company
 - In orbit on the first day (also the day after ejected)
 - In orbit on the next day after landing on the Company, still routing to the Company (in the same session only)
+
+## How to use
+
+Use the terminal command `collect`.
+
+| Command | Description |
+|:--------|:------------|
+| collect | Show help. |
+| collect scrap | Collect all scraps from the cruiser. |
+| collect tool | Collect all tools from the cruiser. |
+| collect all | Collect all items from the cruiser. |
 
 ## Who needs to install
 
