@@ -36,36 +36,75 @@ internal static class FindItemUtils
 
         foreach (var item in allItems)
         {
+            var itemProperties = item.itemProperties;
+            if (itemProperties == null)
+            {
+                Logger.LogError($"Skipping item because itemProperties is null. name={item.name}");
+                continue;
+            }
+
+            var itemName = itemProperties.itemName;
             var isInShipRoom = item.isInShipRoom;
             var isInElevator = item.isInElevator;
+            var isHeld = item.isHeld;
+            var isHeldByEnemy = item.isHeldByEnemy;
+            var isPocketed = item.isPocketed;
             var parentTransformName = item.transform.parent?.name ?? "null";
 
             Logger.LogDebug(
                 "Checking item." +
-                $" name={item.name}" +
+                $" itemName={itemName}" +
                 $" isInShipRoom={isInShipRoom}" +
                 $" isInElevator={isInElevator}" +
+                $" isPocketed={isPocketed}" +
+                $" isHeld={isHeld}" +
+                $" isHeldByEnemy={isHeldByEnemy}" +
                 $" parent={parentTransformName}"
             );
 
             if (isInShipRoom)
             {
-                Logger.LogDebug($"Skipping item because it is in ship room. name={item.name}");
+                Logger.LogDebug($"Skipping item because it is in ship room. itemName={itemName}");
                 continue;
             }
 
-            // TODO: Handheld check
-            // TODO: Exclude easter eggs?
+            // Handheld check
+            if (isPocketed)
+            {
+                Logger.LogDebug($"Skipping item because it is pocketed. itemName={itemName}");
+                continue;
+            }
 
+            if (isHeld)
+            {
+                Logger.LogDebug($"Skipping item because it is held. itemName={itemName}");
+                continue;
+            }
+
+            if (isHeldByEnemy)
+            {
+                Logger.LogDebug($"Skipping item because it is held by enemy. itemName={itemName}");
+                continue;
+            }
+
+            // Type check
+            if (itemName == "Easter egg")
+            {
+                // NOTE: Skip Easter eggs to avoid an issue that they would not explode like vanilla.
+                Logger.LogDebug($"Skipping item because it is an Easter egg. itemName={itemName}");
+                continue;
+            }
+
+            // Boundary check
             if (item.transform.IsChildOf(elevatorTransform))
             {
-                Logger.LogDebug($"Skipping item because it is on elevator. name={item.name}");
+                Logger.LogDebug($"Skipping item because it is on elevator. itemName={itemName}");
                 continue;
             }
 
             if (item.transform.IsChildOf(shipTransform))
             {
-                Logger.LogDebug($"Skipping item because it is on ship. name={item.name}");
+                Logger.LogDebug($"Skipping item because it is on ship. itemName={itemName}");
                 continue;
             }
 
@@ -81,9 +120,11 @@ internal static class FindItemUtils
                     continue;
                 }
 
-                Logger.LogDebug($"Take item. name={item.name} vehicleParent={vehicleTransform.name}");
+                Logger.LogDebug($"Take item. itemName={itemName} vehicleParent={vehicleTransform.name}");
                 yield return item;
             }
+
+            Logger.LogDebug($"Skipping item because it is outside cruiser. itemName={itemName}");
         }
     }
 
