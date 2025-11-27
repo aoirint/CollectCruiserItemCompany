@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using BepInEx.Logging;
 using CollectCruiserItemCompany.Utils;
+using UnityEngine;
 
 namespace CollectCruiserItemCompany.Managers;
 
@@ -53,7 +54,7 @@ internal class CollectCruiserItemManager
         Logger.LogInfo("Finished CollectToShipCoroutine.");
     }
 
-    internal IEnumerator<GrabbableObject> CollectToShipCoroutineInternal(CollectType collectType)
+    internal IEnumerator CollectToShipCoroutineInternal(CollectType collectType)
     {
         var startOfRound = StartOfRound.Instance ?? throw new System.Exception("StartOfRound.Instance is null.");
         var elevatorTransform = startOfRound.elevatorTransform ?? throw new System.Exception("StartOfRound.Instance.elevatorTransform is null.");
@@ -88,7 +89,15 @@ internal class CollectCruiserItemManager
             localPlayer
         ))
         {
-            yield return item;
+            if (item.IsLastItemInChunk)
+            {
+                // Small delay to avoid overwhelming the network
+                yield return new WaitForSeconds(0.1f);
+            }
+            else
+            {
+                yield return null;
+            }
         }
     }
 }
