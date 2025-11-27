@@ -11,7 +11,7 @@ A Lethal Company mod that collects items on the cruiser into the ship floor on t
 Cruiser item collection feature activates when any of these conditions are met:
 
 - While landed on the Company
-- In orbit on the first day (also the day after ejected)
+- In orbit on the first day (also the day after ejected) and routing to the Company
 - In orbit on the next day after landing on the Company, still routing to the Company (in the same session only)
 
 ## How to use
