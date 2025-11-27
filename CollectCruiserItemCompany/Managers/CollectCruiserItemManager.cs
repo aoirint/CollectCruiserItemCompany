@@ -89,7 +89,7 @@ internal class CollectCruiserItemManager
             localPlayer
         ))
         {
-            yield return new WaitForSeconds(0.1f); // 10 seconds per 100 items
+            yield return new WaitForSecondsRealtime(0.1f); // 10 seconds per 100 items
         }
     }
 }
