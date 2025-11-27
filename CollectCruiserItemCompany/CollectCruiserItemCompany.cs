@@ -38,7 +38,7 @@ public class CollectCruiserItemCompany : BaseUnityPlugin
             "General",
             "Permission",
             Permission.HostOnly,
-            "Controls who can collect items from the cruiser." +
+            "Controls who can collect items from cruiser by terminal." +
             " If HostOnly, only the host can collect items." +
             " If Everyone, all players can collect items if they have installed this mod."
         );

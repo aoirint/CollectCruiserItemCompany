@@ -34,7 +34,7 @@ Each item is placed with a small offset to avoid overlapping.
 
 | Name | Type | Default | Description |
 |:--------|:-----|:--------|:------------|
-| Permission | enum | HostOnly | Controls who can collect items from the cruiser. If HostOnly, only the host can collect items. If Everyone, all players can collect items if they have installed this mod. |
+| Permission | enum | HostOnly | Controls who can collect items from cruiser by terminal. If HostOnly, only the host can collect items. If Everyone, all players can collect items if they have installed this mod. |
 
 ## FAQ
 
