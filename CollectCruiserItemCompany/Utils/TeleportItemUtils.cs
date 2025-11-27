@@ -143,7 +143,7 @@ internal static class TeleportItemUtils
                     $" worldNewItemPosition=({worldNewItemPosition.x:F2}, {worldNewItemPosition.y:F2}, {worldNewItemPosition.z:F2})"
                 );
 
-                // TODO: Simulate the easter egg explosion logic in GrabbableObject.EquipItem based on the old position.
+                // Simulate the easter egg explosion logic in GrabbableObject.EquipItem based on the old position.
                 // NOTE: This would not work because hasHitGround does not get synced.
                 // if (item is StunGrenadeItem stunGrenadeItem)
                 // {

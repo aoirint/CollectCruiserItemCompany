@@ -58,7 +58,6 @@ internal class CollectCruiserItemManager
         var startOfRound = StartOfRound.Instance ?? throw new System.Exception("StartOfRound.Instance is null.");
         var elevatorTransform = startOfRound.elevatorTransform ?? throw new System.Exception("StartOfRound.Instance.elevatorTransform is null.");
 
-        // TODO: Use the RPC sender player
         var localPlayer = PlayerUtils.GetLocalPlayer() ?? throw new System.Exception("Local player is null.");
 
         IEnumerable<GrabbableObject> items;
