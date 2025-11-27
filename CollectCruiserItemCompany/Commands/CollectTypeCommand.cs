@@ -169,16 +169,24 @@ internal class CollectTypeCommand : ConfirmableCommand
 
     internal TerminalNode CreateCollectionRequestNotAllowedNode()
     {
+        var builder = new StringBuilder();
+
+        builder.AppendLine("Collection is not allowed currently.");
+
         return TerminalUtils.CreateTerminalNode(
-            displayText: "Collection is not allowed currently.",
+            displayText: builder.ToString(),
             clearPreviousText: false
         );
     }
 
     internal TerminalNode CreateCollectionRequestFailedNode()
     {
+        var builder = new StringBuilder();
+
+        builder.AppendLine("Failed to request collection.");
+
         return TerminalUtils.CreateTerminalNode(
-            displayText: "Failed to request collection.",
+            displayText: builder.ToString(),
             clearPreviousText: false
         );
     }
