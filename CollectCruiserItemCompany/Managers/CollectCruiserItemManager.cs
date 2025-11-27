@@ -64,9 +64,7 @@ internal class CollectCruiserItemManager
         IEnumerable<GrabbableObject> items;
         if (collectType == CollectType.All)
         {
-            // FIXME: Debugging workaround
-            items = FindItemUtils.GetAllItems();
-            // items = FindItemUtils.GetAllItemsInCruiser();
+            items = FindItemUtils.GetAllItemsInCruiser();
         }
         else if (collectType == CollectType.Scrap)
         {
