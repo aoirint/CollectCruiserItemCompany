@@ -11,10 +11,70 @@ $GameExePath = Join-Path $GameDir $GameExeName
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 public static class Win32 {
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     public static extern bool SetWindowText(IntPtr hWnd, string lpString);
+
+    public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    public static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+
+    [DllImport("user32.dll")]
+    public static extern bool IsWindowVisible(IntPtr hWnd);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+    // UnityWndClass が出現しているかどうかを確認
+    public static bool IsUnityReady(int pid)
+    {
+        bool isUnityReady = false;
+
+        // UnityWndClass が出ているか確認
+        EnumWindows((hWnd, lParam) =>
+        {
+            int winPid;
+            GetWindowThreadProcessId(hWnd, out winPid);
+            if (winPid != pid || !IsWindowVisible(hWnd))
+                return true; // continue
+
+            var sb = new StringBuilder(256);
+            GetClassName(hWnd, sb, sb.Capacity);
+            var cls = sb.ToString();
+
+            if (cls == "UnityWndClass") {
+                isUnityReady = true;
+                return false; // ループ終了
+            }
+
+            return true;
+        }, IntPtr.Zero);
+
+      return isUnityReady;
+    }
+
+    // 指定した PID の可視ウィンドウすべてのタイトルを変更する
+    public static bool SetAllWindowTitles(int pid, string title)
+    {
+        EnumWindows((hWnd, lParam) =>
+        {
+            int winPid;
+            GetWindowThreadProcessId(hWnd, out winPid);
+            if (winPid != pid || !IsWindowVisible(hWnd))
+                return true;
+
+            SetWindowText(hWnd, title);
+            return true;
+        }, IntPtr.Zero);
+
+        return true;
+    }
 }
 "@
 
@@ -24,19 +84,102 @@ function Set-WindowTitleSafely {
         [string]$Title
     )
 
-    for ($i = 0; $i -lt 30; $i++) {
+    for ($i = 0; $i -lt 50; $i++) {
         $Proc.Refresh()
 
-        if ($Proc.MainWindowHandle -ne 0) {
-            [Win32]::SetWindowText($Proc.MainWindowHandle, $Title) | Out-Null
-            return $true
+        if ($Proc.HasExited) {
+            Write-Warning "Process already exited: PID $($Proc.Id)"
+            return $false
         }
 
-        Start-Sleep -Milliseconds 200
+        # Unity ウインドウが開くまで待機
+        if (-not [Win32]::IsUnityReady($Proc.Id)) {
+            Start-Sleep -Milliseconds 200
+            continue
+        }
+
+        # 同じPIDのウインドウタイトルをすべて変更
+        [Win32]::SetAllWindowTitles($Proc.Id, $Title)
+        return $true
     }
 
-    Write-Warning "Failed to obtain window handle for PID $($Proc.Id)"
+    Write-Warning "Failed to find Unity window for PID $($Proc.Id)"
     return $false
+}
+
+function Enable-BepInExConsole-If-Exist {
+    param(
+        [string]$ProfileDir
+    )
+
+    $ConfigFile = Join-Path $ProfileDir "BepInEx\config\BepInEx.cfg"
+
+    if (-not (Test-Path $ConfigFile)) {
+        Write-Warning "BepInEx config not found yet: $ConfigFile"
+        return
+    }
+
+    $lines = [System.Collections.Generic.List[string]](Get-Content $ConfigFile)
+
+    # Find [Logging.Console] section
+    $sectionStart = $null
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^\s*\[Logging\.Console\]\s*$') {
+            $sectionStart = $i
+            break
+        }
+    }
+
+    if ($null -eq $sectionStart) {
+        Write-Warning "[Logging.Console] section not found in $ConfigFile"
+        return
+    }
+
+    # Find section end
+    $sectionEnd = $lines.Count
+    for ($j = $sectionStart + 1; $j -lt $lines.Count; $j++) {
+        if ($lines[$j] -match '^\s*\[') {
+            $sectionEnd = $j
+            break
+        }
+    }
+
+    # Set Enabled = true
+    $enabledIndex = $null
+    for ($k = $sectionStart + 1; $k -lt $sectionEnd; $k++) {
+        if ($lines[$k] -match '^\s*Enabled\s*=') {
+            $enabledIndex = $k
+            break
+        }
+    }
+
+    if ($null -ne $enabledIndex) {
+        $lines[$enabledIndex] = 'Enabled = true'
+    }
+    else {
+        $lines.Insert($sectionStart + 1, 'Enabled = true')
+        $sectionEnd++
+    }
+
+    # Set LogLevels = All
+    $logLevelIndex = $null
+    for ($k = $sectionStart + 1; $k -lt $sectionEnd; $k++) {
+        if ($lines[$k] -match '^\s*LogLevels\s*=') {
+            $logLevelIndex = $k
+            break
+        }
+    }
+
+    if ($null -ne $logLevelIndex) {
+        $lines[$logLevelIndex] = 'LogLevels = All'
+    }
+    else {
+        $lines.Insert($sectionStart + 2, 'LogLevels = All')
+    }
+
+    $lines | Set-Content -Path $ConfigFile -Encoding UTF8
+
+    Write-Host "Enabled console logging + LogLevels=All in $ConfigFile"
 }
 
 # Debug build
@@ -51,6 +194,9 @@ if (-not (Test-Path $DebugBuildModFile)) {
 $GameProcesses = @()
 for ($i = 1; $i -le 2; $i++) {
   $ProfileDir = Join-Path $ProfileContainerDir ("profile_" + $i)
+
+  # Enable BepInEx console after second run
+  Enable-BepInExConsole-If-Exist -ProfileDir $ProfileDir
 
   $BepInExPluginDir = Join-Path $ProfileDir "BepInEx\plugins"
 
@@ -102,10 +248,11 @@ for ($i = 1; $i -le 2; $i++) {
   Set-WindowTitleSafely -Proc $GameProcess -Title ("Lethal Company - Profile $i") | Out-Null
 
   # Wait to prevent conflicting initial file access
-  Sleep -Seconds 1
+  Start-Sleep -Seconds 1
 }
 
 # Wait until all game processes exit
+[System.Diagnostics.Debug]::WriteLine("Waiting for game processes to exit...")
 try {
   while ($true) {
     $Alive = $GameProcesses | Where-Object { $_ -and -not $_.HasExited }
