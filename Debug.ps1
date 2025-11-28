@@ -257,6 +257,8 @@ try {
   while ($true) {
     $Alive = $GameProcesses | Where-Object { $_ -and -not $_.HasExited }
 
+    Write-Host ("Alive processes: " + $Alive.Count)
+
     if (-not $Alive) {
       break
     }
