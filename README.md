@@ -14,13 +14,23 @@ Install PowerShell 7.
 
 - <https://learn.microsoft.com/en-us/powershell/scripting/install/install-powershell-on-windows>
 
+Install Visual Studio 2022.
+
+- <https://visualstudio.microsoft.com/en-us/vs/>
+
 Restore NuGet packages.
 
 ```powershell
 dotnet restore --locked-mode
 
 pwsh ./InitProfiles.ps1
+```
 
+Open `CollectCruiserItemCompany.sln` in Visual Studio.
+
+Launch `HostAndGuest` profile to debug. Or manuall run `Debug.ps1`.
+
+```powershell
 pwsh ./Debug.ps1
 ```
 
