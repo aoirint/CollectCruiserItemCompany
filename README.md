@@ -10,10 +10,18 @@ Install .NET SDK 10.0 or later.
 
 - <https://dotnet.microsoft.com/en-us/download/dotnet/10.0>
 
+Install PowerShell 7.
+
+- <https://learn.microsoft.com/en-us/powershell/scripting/install/install-powershell-on-windows>
+
 Restore NuGet packages.
 
 ```powershell
 dotnet restore --locked-mode
+
+pwsh ./InitProfiles.ps1
+
+pwsh ./Debug.ps1
 ```
 
 ## Code format
