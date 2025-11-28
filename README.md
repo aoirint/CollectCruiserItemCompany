@@ -32,7 +32,7 @@ pwsh ./InitProfiles.ps1
 
 Open `CollectCruiserItemCompany.sln` in Visual Studio.
 
-Launch `HostAndGuest` profile to debug. Or manuall run `Debug.ps1`.
+Launch `HostAndGuest` profile to debug. Or manually run `Debug.ps1`.
 
 ```powershell
 pwsh ./Debug.ps1
