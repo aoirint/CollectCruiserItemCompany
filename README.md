@@ -22,7 +22,11 @@ Restore NuGet packages.
 
 ```powershell
 dotnet restore --locked-mode
+```
 
+Create BeplnEx profiles in `./Profiles` directory.
+
+```powershell
 pwsh ./InitProfiles.ps1
 ```
 

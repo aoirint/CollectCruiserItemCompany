@@ -2,7 +2,7 @@
 
 $ErrorActionPreference = 'Stop'
 
-$ProfileContainerDir = Join-Path $PSScriptRoot "profiles"
+$ProfileContainerDir = Join-Path $PSScriptRoot "Profiles"
 
 $BepInExVersion = "5.4.21"
 $BepInExAssetName = "BepInEx_x64_5.4.21.0.zip"
