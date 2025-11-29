@@ -31,18 +31,18 @@ public static class Win32 {
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
-    // UnityWndClass が出現しているかどうかを確認
+    // Check if UnityWndClass window exists for the given PID
     public static bool IsUnityReady(int pid)
     {
         bool isUnityReady = false;
 
-        // UnityWndClass が出ているか確認
+        // Loop through all windows
         EnumWindows((hWnd, lParam) =>
         {
             int winPid;
             GetWindowThreadProcessId(hWnd, out winPid);
             if (winPid != pid || !IsWindowVisible(hWnd))
-                return true; // continue
+                return true; // Continue enumeration
 
             var sb = new StringBuilder(256);
             GetClassName(hWnd, sb, sb.Capacity);
@@ -50,16 +50,16 @@ public static class Win32 {
 
             if (cls == "UnityWndClass") {
                 isUnityReady = true;
-                return false; // ループ終了
+                return false; // Stop enumeration
             }
 
-            return true;
+            return true; // Continue enumeration
         }, IntPtr.Zero);
 
       return isUnityReady;
     }
 
-    // 指定した PID の可視ウィンドウすべてのタイトルを変更する
+    // Set window titles for all windows with the given PID
     public static bool SetAllWindowTitles(int pid, string title)
     {
         EnumWindows((hWnd, lParam) =>
@@ -92,13 +92,13 @@ function Set-WindowTitleSafely {
             return $false
         }
 
-        # Unity ウインドウが開くまで待機
+        # Wait until Unity window is ready
         if (-not [Win32]::IsUnityReady($Proc.Id)) {
             Start-Sleep -Milliseconds 200
             continue
         }
 
-        # 同じPIDのウインドウタイトルをすべて変更
+        # Set window title for all windows of the process
         [Win32]::SetAllWindowTitles($Proc.Id, $Title)
         return $true
     }
