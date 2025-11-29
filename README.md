@@ -2,7 +2,7 @@
 
 A Lethal Company mod that collects items from the cruiser into the ship on the Company and in some limited situations.
 
-- [User guide](./assets_/README.md)
+- [User guide](./assets/README.md)
 
 ## Development
 
