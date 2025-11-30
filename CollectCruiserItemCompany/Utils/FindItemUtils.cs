@@ -38,7 +38,7 @@ internal static class FindItemUtils
 
         var exclusionList = CollectCruiserItemCompany.ExclusionListConfig?.Value
             .Split(',', System.StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => s.Trim())
+            .Select(s => s.Trim().ToLower())
             .Where(s => !string.IsNullOrEmpty(s))
             .ToArray()
             ?? [];
@@ -99,7 +99,7 @@ internal static class FindItemUtils
             }
 
             // Exclusion list check
-            if (exclusionList.Contains(itemName))
+            if (exclusionList.Contains(itemName.ToLower()))
             {
                 Logger.LogDebug($"Skipping item because it is in the exclusion list. itemName={itemName}");
                 continue;
