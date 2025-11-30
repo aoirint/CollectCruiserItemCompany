@@ -49,7 +49,7 @@ public class CollectCruiserItemCompany : BaseUnityPlugin
             "General",
             "ExclusionList",
             "",
-            "A comma-separated list of item names that should not be collected. Example: 'Easter egg, Shovel'"
+            "A comma-separated list of item names that should not be collected. Exact match and case-insensitive. Example: `Easter egg, Shovel`"
         );
 
         harmony.PatchAll();

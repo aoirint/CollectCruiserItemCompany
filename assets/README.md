@@ -42,7 +42,7 @@ Each item is placed with a small offset to avoid overlapping.
 | Name | Type | Default | Description |
 |:--------|:-----|:--------|:------------|
 | Permission | enum | HostOnly | Controls who can collect items from cruiser by terminal. If HostOnly, only the host can collect items. If Everyone, all players can collect items if they have installed this mod. |
-| Exclusion List | string | (empty) | A comma-separated list of item names that should not be collected from the cruiser. Example: 'Easter egg, Weed killer' |
+| Exclusion List | string | (empty) | A comma-separated list of item names that should not be collected. Exact match and case-insensitive. Example: `Easter egg, Weed killer` |
 
 You can find item names here:
 
