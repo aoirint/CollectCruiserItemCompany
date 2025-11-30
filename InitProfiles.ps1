@@ -1,4 +1,4 @@
-# Initialize BeplnEx profiles with LcBetterSaves
+# Initialize BeplnEx profiles
 
 $ErrorActionPreference = 'Stop'
 
