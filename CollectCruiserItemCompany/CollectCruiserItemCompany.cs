@@ -32,6 +32,10 @@ public class CollectCruiserItemCompany : BaseUnityPlugin
 
     internal static ConfigEntry<string>? ExclusionListConfig { get; private set; }
 
+    internal static ConfigEntry<string>? ScrapExclusionListConfig { get; private set; }
+
+    internal static ConfigEntry<string>? ToolExclusionListConfig { get; private set; }
+
     private void Awake()
     {
         Logger = base.Logger;
@@ -47,9 +51,23 @@ public class CollectCruiserItemCompany : BaseUnityPlugin
 
         ExclusionListConfig = Config.Bind(
             "General",
-            "ExclusionList",
+            "Exclusion List",
             "",
             "A comma-separated list of item names that should not be collected. Exact match and case-insensitive. Example: `Easter egg, Shovel`"
+        );
+
+        ScrapExclusionListConfig = Config.Bind(
+            "General",
+            "Scrap Exclusion List",
+            "Shotgun, Knife",
+            "Additional exclusion list for `collect scrap`."
+        );
+
+        ToolExclusionListConfig = Config.Bind(
+            "General",
+            "Tool Exclusion List",
+            "",
+            "Additional exclusion list for `collect tool`."
         );
 
         harmony.PatchAll();

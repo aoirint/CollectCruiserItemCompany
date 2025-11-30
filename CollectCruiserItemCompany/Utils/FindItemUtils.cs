@@ -27,23 +27,22 @@ internal static class FindItemUtils
         }
     }
 
-    internal static IEnumerable<GrabbableObject> GetAllItemsInCruiser()
+    internal static IEnumerable<GrabbableObject> GetAllItemsInCruiserInternal(string commaSeparatedExclusionListString)
     {
         var startOfRound = StartOfRound.Instance ?? throw new System.Exception("StartOfRound.Instance is null.");
         var elevatorTransform = startOfRound.elevatorTransform ?? throw new System.Exception("StartOfRound.Instance.elevatorTransform is null.");
         var shipTransform = ShipUtils.GetShipTransform() ?? throw new System.Exception("Ship transform is null.");
         var vehicleTransforms = ShipUtils.GetVehicleTransforms() ?? throw new System.Exception("Vehicle transforms is null.");
 
-        var allItems = GetAllItems();
-
-        var exclusionList = CollectCruiserItemCompany.ExclusionListConfig?.Value
-            .Split(',', System.StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => s.Trim().ToLower())
-            .Where(s => !string.IsNullOrEmpty(s))
-            .ToArray()
-            ?? [];
+        var exclusionList = commaSeparatedExclusionListString
+            .Split(',')
+            .Select(name => name.Trim().ToLower())
+            .Where(name => !string.IsNullOrEmpty(name))
+            .ToArray();
 
         Logger.LogInfo($"Exclusion list: {string.Join(", ", exclusionList)}");
+
+        var allItems = GetAllItems();
 
         foreach (var item in allItems)
         {
@@ -132,9 +131,24 @@ internal static class FindItemUtils
         }
     }
 
+    internal static IEnumerable<GrabbableObject> GetAllItemsInCruiser()
+    {
+        var exclusionListString = CollectCruiserItemCompany.ExclusionListConfig?.Value ?? "";
+
+        return GetAllItemsInCruiserInternal(exclusionListString);
+    }
+
     internal static IEnumerable<GrabbableObject> GetAllScraps()
     {
-        var allItems = GetAllItemsInCruiser();
+        var exclusionListString = CollectCruiserItemCompany.ExclusionListConfig?.Value ?? "";
+        var scrapExclusionListString = CollectCruiserItemCompany.ScrapExclusionListConfig?.Value ?? "";
+
+        var combinedExclusionListString = string.Join(
+            ",",
+            [exclusionListString, scrapExclusionListString]
+        );
+
+        var allItems = GetAllItemsInCruiserInternal(combinedExclusionListString);
 
         foreach (var item in allItems)
         {
@@ -153,7 +167,15 @@ internal static class FindItemUtils
 
     internal static IEnumerable<GrabbableObject> GetAllTools()
     {
-        var allItems = GetAllItemsInCruiser();
+        var exclusionListString = CollectCruiserItemCompany.ExclusionListConfig?.Value ?? "";
+        var toolExclusionListString = CollectCruiserItemCompany.ToolExclusionListConfig?.Value ?? "";
+
+        var combinedExclusionListString = string.Join(
+            ",",
+            [exclusionListString, toolExclusionListString]
+        );
+
+        var allItems = GetAllItemsInCruiserInternal(combinedExclusionListString);
 
         foreach (var item in allItems)
         {
