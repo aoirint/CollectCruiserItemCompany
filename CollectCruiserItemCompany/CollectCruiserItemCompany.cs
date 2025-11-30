@@ -51,9 +51,9 @@ public class CollectCruiserItemCompany : BaseUnityPlugin
 
         ExclusionListConfig = Config.Bind(
             "General",
-            "Exclusion List",
+            "Global Exclusion List",
             "",
-            "A comma-separated list of item names that should not be collected. Exact match and case-insensitive. Example: `Easter egg, Shovel`"
+            "Excludes items from being collected by any `collect` command. A comma-separated list of item names, exact match and case-insensitive. Example: `Easter egg, Shovel`"
         );
 
         ScrapExclusionListConfig = Config.Bind(
