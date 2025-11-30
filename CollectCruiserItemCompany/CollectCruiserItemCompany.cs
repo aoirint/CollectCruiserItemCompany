@@ -30,6 +30,8 @@ public class CollectCruiserItemCompany : BaseUnityPlugin
 
     internal static ConfigEntry<Permission>? PermissionConfig { get; private set; }
 
+    internal static ConfigEntry<string>? ExclusionListConfig { get; private set; }
+
     private void Awake()
     {
         Logger = base.Logger;
@@ -41,6 +43,13 @@ public class CollectCruiserItemCompany : BaseUnityPlugin
             "Controls who can collect items from cruiser by terminal." +
             " If HostOnly, only the host can collect items." +
             " If Everyone, all players can collect items if they have installed this mod."
+        );
+
+        ExclusionListConfig = Config.Bind(
+            "General",
+            "ExclusionList",
+            "",
+            "A comma-separated list of item names that should not be collected. Example: 'Easter egg, Shovel'"
         );
 
         harmony.PatchAll();

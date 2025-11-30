@@ -1,7 +1,9 @@
 #nullable enable
 
 using System.Collections.Generic;
+using System.Linq;
 using BepInEx.Logging;
+using EasyTextEffects.Editor.MyBoxCopy.Extensions;
 using UnityEngine;
 
 namespace CollectCruiserItemCompany.Utils;
@@ -33,6 +35,15 @@ internal static class FindItemUtils
         var vehicleTransforms = ShipUtils.GetVehicleTransforms() ?? throw new System.Exception("Vehicle transforms is null.");
 
         var allItems = GetAllItems();
+
+        var exclusionList = CollectCruiserItemCompany.ExclusionListConfig?.Value
+            .Split(',', System.StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim())
+            .Where(s => !string.IsNullOrEmpty(s))
+            .ToArray()
+            ?? [];
+
+        Logger.LogInfo($"Exclusion list: {string.Join(", ", exclusionList)}");
 
         foreach (var item in allItems)
         {
@@ -87,11 +98,10 @@ internal static class FindItemUtils
                 continue;
             }
 
-            // Type check
-            if (itemName == "Easter egg")
+            // Exclusion list check
+            if (exclusionList.Contains(itemName))
             {
-                // NOTE: Skip Easter eggs to avoid an issue that they would not explode like vanilla.
-                Logger.LogDebug($"Skipping item because it is an Easter egg. itemName={itemName}");
+                Logger.LogDebug($"Skipping item because it is in the exclusion list. itemName={itemName}");
                 continue;
             }
 

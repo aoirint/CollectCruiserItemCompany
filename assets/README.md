@@ -37,15 +37,17 @@ Moved items are placed on the ship floor that is the default position for out-of
 
 Each item is placed with a small offset to avoid overlapping.
 
-## Limitations
-
-- **Easter eggs are not collected to avoid spoiling their explosion.**
-
 ## Configurations
 
 | Name | Type | Default | Description |
 |:--------|:-----|:--------|:------------|
 | Permission | enum | HostOnly | Controls who can collect items from cruiser by terminal. If HostOnly, only the host can collect items. If Everyone, all players can collect items if they have installed this mod. |
+| Exclusion List | string | (empty) | A comma-separated list of item names that should not be collected from the cruiser. Example: 'Easter egg, Weed killer' |
+
+You can find item names here:
+
+- [Scrap - Lethal Company Wiki](https://lethal.miraheze.org/wiki/Scrap)
+- [Store - Lethal Company Wiki](https://lethal.miraheze.org/wiki/Store)
 
 ## FAQ
 
