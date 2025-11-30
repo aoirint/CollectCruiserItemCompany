@@ -2,7 +2,7 @@
 
 $ErrorActionPreference = 'Stop'
 
-$ProfileContainerDir = Join-Path $PSScriptRoot "Profiles"
+$ProfileContainerDir = Join-Path $PSScriptRoot "profiles"
 
 $BepInExVersion = "5.4.21"
 $BepInExAssetName = "BepInEx_x64_5.4.21.0.zip"
@@ -13,7 +13,7 @@ $LcBetterSavesSha256Expected = "502c75b79c3a89ccce484893df020adcdb8eade9d3a10ea3
 
 # Download BepInEx
 $BepInExUrl = "https://github.com/BepInEx/BepInEx/releases/download/v${BepInExVersion}/${BepInExAssetName}"
-$TempBepInExZipFile = Join-Path $env:TEMP ("BepInex_zip_" + [guid]::NewGuid().ToString() + ".zip")
+$TempBepInExZipFile = Join-Path $env:TEMP ("BepInEx_zip_" + [guid]::NewGuid().ToString() + ".zip")
 try {
   Invoke-WebRequest -Uri $BepInExUrl -OutFile $TempBepInExZipFile
 } catch {
@@ -28,7 +28,7 @@ if ($BepInExHash -ne $BepInExSha256Expected.ToLower()) {
   exit 1
 }
 
-$TempBepInExDir = Join-Path $env:TEMP  ("BepInex_" + [guid]::NewGuid().ToString())
+$TempBepInExDir = Join-Path $env:TEMP  ("BepInEx_" + [guid]::NewGuid().ToString())
 try {
   Expand-Archive -Path $TempBepInExZipFile -DestinationPath $TempBepInExDir -Force
 } catch {
