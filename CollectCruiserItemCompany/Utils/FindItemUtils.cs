@@ -80,12 +80,6 @@ internal static class FindItemUtils
             }
 
             // Handheld check
-            if (isPocketed)
-            {
-                Logger.LogDebug($"Skipping item because it is pocketed. itemName={itemName}");
-                continue;
-            }
-
             if (isHeld)
             {
                 Logger.LogDebug($"Skipping item because it is held. itemName={itemName}");
