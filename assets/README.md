@@ -2,6 +2,8 @@
 
 A Lethal Company mod that collects items from the cruiser into the ship on the Company and in some limited situations.
 
+This mod works for v73+. Maybe works for the earlier versions, but not tested.
+
 ## What it does
 
 - Cruiser Item Collection by Terminal
